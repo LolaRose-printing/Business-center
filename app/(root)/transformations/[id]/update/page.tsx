@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 import Header from "@/components/shared/Header";
@@ -7,8 +6,17 @@ import { transformationTypes } from "@/constants";
 import { getUserById } from "@/lib/actions/user.actions";
 import { getImageById } from "@/lib/actions/image.actions";
 
+async function getCurrentUserId() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
+    credentials: "include",
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.userId;
+}
+
 const Page = async ({ params: { id } }: SearchParamProps) => {
-  const { userId } = auth();
+  const userId = await getCurrentUserId();
 
   if (!userId) redirect("/sign-in");
 

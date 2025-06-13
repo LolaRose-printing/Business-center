@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("ROSEHUB_URL")
+}
+
+model Image {
+  id                Int       @id @default(autoincrement())
+  title             String
+  transformationType String
+  publicId          String
+  secureURL         String
+  width             Int?       // optional
+  height            Int?       // optional
+  config            Json?      // JSON object for config
+  transformationUrl String?    // optional
+  aspectRatio       String?    // optional
+  color             String?    // optional
+  prompt            String?    // optional
+
+  authorId          Int
+  author            User       @relation(fields: [authorId], references: [id])
+
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  stripeId  String   @unique
+  amount    Float
+  plan      String?   // optional
+  credits   Int?      // optional
+
+  buyerId   Int?
+  buyer     User?    @relation(fields: [buyerId], references: [id])
+
+  @@map("transactions") // optional: maps table name if you want
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  clerkId      String        @unique
+  email        String        @unique
+  username     String        @unique
+  photo        String
+  firstName    String?       // optional
+  lastName     String?       // optional
+  planId       Int           @default(1)
+  creditBalance Int          @default(10)
+
+  images       Image[]
+  transactions Transaction[]
+}
