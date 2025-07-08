@@ -93,9 +93,9 @@ export async function getImageById(imageId: number) {
         author: {
           select: {
             id: true,
-            firstName: true,
+            name: true,
             lastName: true,
-            clerkId: true,
+            email: true,
           },
         },
       },
@@ -119,9 +119,6 @@ export async function getAllImages({
   searchQuery?: string;
 }) {
   try {
-    // NOTE: You’ll need to implement search/filter logic for your SQL DB here.
-    // For now, simple example filtering title or prompt containing searchQuery.
-
     const skipAmount = (page - 1) * limit;
 
     const whereClause = searchQuery
@@ -140,9 +137,9 @@ export async function getAllImages({
           author: {
             select: {
               id: true,
-              firstName: true,
+              name: true,
               lastName: true,
-              clerkId: true,
+              email: true,
             },
           },
         },
@@ -184,9 +181,9 @@ export async function getUserImages({
           author: {
             select: {
               id: true,
-              firstName: true,
+              name: true,
               lastName: true,
-              clerkId: true,
+              email: true,
             },
           },
         },
