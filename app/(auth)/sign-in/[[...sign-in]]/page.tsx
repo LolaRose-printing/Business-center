@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL  || 'https://api.lolaprint.us';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.lolaprint.us';
 
 const SignInPage = () => {
   const [email, setEmail] = useState('');
@@ -19,7 +19,11 @@ const SignInPage = () => {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email,
+          password,
+          provider: 'LOCAL',  // <-- added this line
+        }),
       });
 
       if (res.ok) {
