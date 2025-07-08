@@ -19,18 +19,17 @@ const SignInPage = () => {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Important: send cookies back and forth
         body: JSON.stringify({
           email,
           password,
-          provider: 'LOCAL',  // <-- added this line
+          provider: 'LOCAL',
         }),
       });
 
       if (res.ok) {
-        const data = await res.json();
-        // Save token or session however your backend returns it
-        localStorage.setItem('token', data.token);
-        router.push('/dashboard'); // redirect on success
+        // No need to read token from response since cookie is set by backend
+        router.push('/profile'); // redirect to existing page, not /dashboard
       } else {
         const errData = await res.json();
         setError(errData.message || 'Login failed');
