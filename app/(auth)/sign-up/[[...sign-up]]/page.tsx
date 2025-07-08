@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.lolaprint.us';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -22,19 +22,31 @@ const SignUpPage = () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email,
+          password,
+          provider: 'LOCAL',  // important if your backend expects this
+        }),
       });
 
       if (res.ok) {
-        router.push('/signin'); // redirect to sign in after successful signup
+        router.push('/signin'); // redirect after successful signup
       } else {
-        const errData = await res.json();
-        setError(errData.message || 'Signup failed');
+        let errMessage = 'Signup failed';
+        try {
+          const errData = await res.json();
+          errMessage = errData.message || JSON.stringify(errData);
+        } catch {
+          errMessage = await res.text();
+        }
+        console.error('Signup error:', errMessage);
+        setError(errMessage);
       }
     } catch (err) {
+      console.error('Network or unexpected error:', err);
       setError('Network error, please try again.');
     }
   };
