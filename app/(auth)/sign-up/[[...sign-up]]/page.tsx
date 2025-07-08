@@ -7,6 +7,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.lolapr
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
+  const [company, setCompany] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,33 +21,26 @@ const SignUpPage = () => {
       setError('Passwords do not match');
       return;
     }
+    
+    if (!company || company.length > 128) {
+      setError('Company name is required and must be 128 characters or less');
+      return;
+    }
 
     try {
       const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          password,
-          provider: 'LOCAL',  // important if your backend expects this
-        }),
+        body: JSON.stringify({ email, password, provider: 'LOCAL', company }),
       });
 
       if (res.ok) {
-        router.push('/signin'); // redirect after successful signup
+        router.push('/signin'); // redirect to sign in after successful signup
       } else {
-        let errMessage = 'Signup failed';
-        try {
-          const errData = await res.json();
-          errMessage = errData.message || JSON.stringify(errData);
-        } catch {
-          errMessage = await res.text();
-        }
-        console.error('Signup error:', errMessage);
-        setError(errMessage);
+        const errData = await res.json();
+        setError(errData.message || 'Signup failed');
       }
     } catch (err) {
-      console.error('Network or unexpected error:', err);
       setError('Network error, please try again.');
     }
   };
@@ -61,6 +55,15 @@ const SignUpPage = () => {
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
+          style={{ display: 'block', width: '100%', marginBottom: 12 }}
+        />
+        <input
+          type="text"
+          placeholder="Company"
+          value={company}
+          onChange={e => setCompany(e.target.value)}
+          required
+          maxLength={128}
           style={{ display: 'block', width: '100%', marginBottom: 12 }}
         />
         <input
