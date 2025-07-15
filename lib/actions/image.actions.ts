@@ -93,7 +93,7 @@ export async function getImageById(imageId: number) {
         author: {
           select: {
             id: true,
-            name: true,
+            firstName: true,
             lastName: true,
             email: true,
           },
@@ -137,7 +137,7 @@ export async function getAllImages({
           author: {
             select: {
               id: true,
-              name: true,
+              firstName: true,
               lastName: true,
               email: true,
             },
@@ -181,7 +181,7 @@ export async function getUserImages({
           author: {
             select: {
               id: true,
-              name: true,
+              firstName: true,
               lastName: true,
               email: true,
             },
