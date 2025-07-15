@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
 import { cn } from "@/lib/utils";
+import "../styles/globals.css";  
+
 
 import "./globals.css";
 
@@ -11,8 +13,8 @@ const IBMPlex = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Imaginify",
-  description: "AI-powered image generator",
+  title: "lolarose",
+  description: "The Print & Business Hub for Modern Entrepreneurs",
 };
 
 export default function RootLayout({
