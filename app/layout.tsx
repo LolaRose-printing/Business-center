@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
 import { cn } from "@/lib/utils";
-import "../styles/globals.css";  
+
 
 
 import "./globals.css";
