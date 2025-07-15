@@ -19,10 +19,6 @@ const SignUpPage = () => {
   const [error, setError] = useState('');
 
   const handleNext = () => {
-    if (step === 1 && !accountType) {
-      setError('Please select an account type');
-      return;
-    }
     setError('');
     setStep(step + 1);
   };
@@ -36,9 +32,11 @@ const SignUpPage = () => {
       return;
     }
 
-    if (accountType === 'BUSINESS' && (!companyName || companyName.length > 128)) {
-      setError('Company name is required and must be under 128 characters');
-      return;
+    if (accountType === 'BUSINESS') {
+      if (!companyName || companyName.length < 3 || companyName.length > 128) {
+        setError('Company name must be between 3 and 128 characters');
+        return;
+      }
     }
 
     try {
@@ -49,14 +47,14 @@ const SignUpPage = () => {
           email,
           username,
           password,
-          accountType,
-          companyName: accountType === 'BUSINESS' ? companyName : null,
+          provider: 'LOCAL',
+          company: accountType === 'BUSINESS' ? companyName : null,
+          accountType, // optional if backend wants it
         }),
       });
 
       if (res.ok) {
-        // Directly sign in new user or redirect to sign in
-        router.push('/profile'); // You could auto-login, too!
+        router.push('/profile');
       } else {
         const errData = await res.json();
         setError(errData.message || 'Sign up failed');
@@ -68,23 +66,23 @@ const SignUpPage = () => {
 
   return (
     <div className="max-w-md mx-auto my-16 p-8 bg-white shadow-xl rounded-xl">
-      <h1 className="text-3xl font-bold mb-6 text-center">Join LolaPrint</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Create your account</h1>
 
       {step === 1 && (
         <div>
-          <h2 className="text-xl font-semibold mb-4">Are you signing up as:</h2>
+          <h2 className="text-xl font-semibold mb-4 text-center">Are you signing up as:</h2>
           <div className="flex flex-col gap-4">
             <button
               onClick={() => { setAccountType('INDIVIDUAL'); handleNext(); }}
               className="border border-gray-300 rounded-lg p-4 hover:border-blue-500 focus:outline-none focus:ring-2"
             >
-              ✨ Individual Creator
+              ✨ Individual
             </button>
             <button
               onClick={() => { setAccountType('BUSINESS'); handleNext(); }}
               className="border border-gray-300 rounded-lg p-4 hover:border-blue-500 focus:outline-none focus:ring-2"
             >
-              🏢 Business / Organization
+              🏢 Business
             </button>
           </div>
         </div>
@@ -116,6 +114,8 @@ const SignUpPage = () => {
               value={companyName}
               onChange={e => setCompanyName(e.target.value)}
               required
+              minLength={3}
+              maxLength={128}
             />
           )}
           <input
