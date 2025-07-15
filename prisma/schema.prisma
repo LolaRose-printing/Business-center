@@ -1,3 +1,6 @@
+// ------------------------------------
+// Prisma datasource + generator
+// ------------------------------------
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -7,14 +10,31 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ------------------------------------
+// ENUM: Account type
+// ------------------------------------
+enum AccountType {
+  INDIVIDUAL
+  BUSINESS
+}
+
+// ------------------------------------
+// MODELS
+// ------------------------------------
+
 model User {
   id            String        @id @default(cuid())
   clerkId       String        @unique
   email         String        @unique
   username      String        @unique
   photo         String
+
   firstName     String?
   lastName      String?
+
+  accountType   AccountType   @default(INDIVIDUAL)
+  companyName   String?       // Optional; only for BUSINESS
+
   planId        Int           @default(1)
   creditBalance Int           @default(10)
 
@@ -35,7 +55,7 @@ model Image {
   aspectRatio        String?
   color              String?
   prompt             String?
-  
+
   author             User     @relation("UserImages", fields: [authorId], references: [id])
   authorId           String
 
@@ -50,7 +70,7 @@ model Transaction {
   amount    Float
   plan      String?
   credits   Int?
-  
+
   buyer     User?    @relation("UserTransactions", fields: [buyerId], references: [id])
   buyerId   String?
 }
