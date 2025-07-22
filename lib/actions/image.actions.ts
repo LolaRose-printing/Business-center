@@ -8,9 +8,28 @@ import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 
 // ADD IMAGE
-export async function addImage({ image, userId, path }: AddImageParams) {
+export async function addImage({
+  image,
+  userId,
+  path,
+}: {
+  image: {
+    title: string;
+    transformationType: string;
+    publicId: string;
+    secureURL: string;
+    width?: number;
+    height?: number;
+    config?: any;
+    transformationUrl?: string;
+    aspectRatio?: string;
+    color?: string;
+    prompt?: string;
+  };
+  userId: string; // Use string for Prisma ID
+  path: string;
+}) {
   try {
-    // Verify user exists
     const author = await prisma.user.findUnique({ where: { id: userId } });
     if (!author) throw new Error("User not found");
 
@@ -35,11 +54,33 @@ export async function addImage({ image, userId, path }: AddImageParams) {
     return newImage;
   } catch (error) {
     handleError(error);
+    return null; // or throw error if you prefer
   }
 }
 
 // UPDATE IMAGE
-export async function updateImage({ image, userId, path }: UpdateImageParams) {
+export async function updateImage({
+  image,
+  userId,
+  path,
+}: {
+  image: {
+    id: string; // Prisma uses string IDs
+    title: string;
+    transformationType: string;
+    publicId: string;
+    secureURL: string;
+    width?: number;
+    height?: number;
+    config?: any;
+    transformationUrl?: string;
+    aspectRatio?: string;
+    color?: string;
+    prompt?: string;
+  };
+  userId: string;
+  path: string;
+}) {
   try {
     const imageToUpdate = await prisma.image.findUnique({
       where: { id: image.id },
@@ -70,22 +111,22 @@ export async function updateImage({ image, userId, path }: UpdateImageParams) {
     return updatedImage;
   } catch (error) {
     handleError(error);
+    return null;
   }
 }
 
 // DELETE IMAGE
-export async function deleteImage(imageId: number) {
+export async function deleteImage(imageId: string) {
   try {
     await prisma.image.delete({ where: { id: imageId } });
+    redirect("/");
   } catch (error) {
     handleError(error);
-  } finally {
-    redirect("/");
   }
 }
 
 // GET IMAGE BY ID
-export async function getImageById(imageId: number) {
+export async function getImageById(imageId: string) {
   try {
     const image = await prisma.image.findUnique({
       where: { id: imageId },
@@ -105,10 +146,11 @@ export async function getImageById(imageId: number) {
     return image;
   } catch (error) {
     handleError(error);
+    return null;
   }
 }
 
-// GET IMAGES
+// GET ALL IMAGES WITH SEARCH + PAGINATION
 export async function getAllImages({
   limit = 9,
   page = 1,
@@ -153,11 +195,12 @@ export async function getAllImages({
 
     return {
       data: images,
-      totalPage: Math.ceil(totalImages / limit),
+      totalPages: Math.ceil(totalImages / limit), // fixed to totalPages plural
       savedImages,
     };
   } catch (error) {
     handleError(error);
+    return null;
   }
 }
 
@@ -169,7 +212,7 @@ export async function getUserImages({
 }: {
   limit?: number;
   page: number;
-  userId: number;
+  userId: string;
 }) {
   try {
     const skipAmount = (page - 1) * limit;
@@ -200,5 +243,6 @@ export async function getUserImages({
     };
   } catch (error) {
     handleError(error);
+    return null;
   }
 }

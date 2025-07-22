@@ -6,6 +6,22 @@ import { handleError } from "../utils";
 
 const prisma = new PrismaClient();
 
+type CreateUserParams = {
+  email: string;
+  username: string;
+  passwordHash: string;
+  clerkId?: string;
+  firstName?: string;
+  lastName?: string;
+  accountType?: "INDIVIDUAL" | "BUSINESS";
+  company?: string;
+  planId?: number;
+  creditBalance?: number;
+  photo?: string;
+};
+
+type UpdateUserParams = Partial<CreateUserParams>;
+
 // CREATE
 export async function createUser(user: CreateUserParams) {
   try {
@@ -16,11 +32,12 @@ export async function createUser(user: CreateUserParams) {
     return newUser;
   } catch (error) {
     handleError(error);
+    throw error; // Rethrow so caller can react
   }
 }
 
-// READ
-export async function getUserById(clerkId: string) {
+// READ by clerkId (optional unique)
+export async function getUserByClerkId(clerkId: string) {
   try {
     const user = await prisma.user.findUnique({
       where: { clerkId },
@@ -31,11 +48,28 @@ export async function getUserById(clerkId: string) {
     return user;
   } catch (error) {
     handleError(error);
+    throw error;
   }
 }
 
-// UPDATE
-export async function updateUser(clerkId: string, user: UpdateUserParams) {
+// READ by id (primary key)
+export async function getUserById(id: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    return user;
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+}
+
+// UPDATE by clerkId
+export async function updateUserByClerkId(clerkId: string, user: UpdateUserParams) {
   try {
     const updatedUser = await prisma.user.update({
       where: { clerkId },
@@ -47,11 +81,29 @@ export async function updateUser(clerkId: string, user: UpdateUserParams) {
     return updatedUser;
   } catch (error) {
     handleError(error);
+    throw error;
   }
 }
 
-// DELETE
-export async function deleteUser(clerkId: string) {
+// UPDATE by id
+export async function updateUserById(id: string, user: UpdateUserParams) {
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: user,
+    });
+
+    if (!updatedUser) throw new Error("User update failed");
+
+    return updatedUser;
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+}
+
+// DELETE by clerkId
+export async function deleteUserByClerkId(clerkId: string) {
   try {
     // Find user to delete
     const userToDelete = await prisma.user.findUnique({
@@ -70,14 +122,39 @@ export async function deleteUser(clerkId: string) {
     return deletedUser;
   } catch (error) {
     handleError(error);
+    throw error;
   }
 }
 
-// USE CREDITS
-export async function updateCredits(userId: number, creditFee: number) {
+// DELETE by id
+export async function deleteUserById(id: string) {
+  try {
+    // Find user to delete
+    const userToDelete = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!userToDelete) throw new Error("User not found");
+
+    // Delete user
+    const deletedUser = await prisma.user.delete({
+      where: { id },
+    });
+
+    revalidatePath("/");
+
+    return deletedUser;
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+}
+
+// USE CREDITS - increment or decrement by creditFee (use negative to decrement)
+export async function updateCredits(id: string, creditFee: number) {
   try {
     const updatedUserCredits = await prisma.user.update({
-      where: { id: userId },
+      where: { id },
       data: {
         creditBalance: {
           increment: creditFee,
@@ -90,5 +167,6 @@ export async function updateCredits(userId: number, creditFee: number) {
     return updatedUserCredits;
   } catch (error) {
     handleError(error);
+    throw error;
   }
 }

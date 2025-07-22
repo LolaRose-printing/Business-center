@@ -8,18 +8,36 @@ import { updateCredits } from "./user.actions";
 
 const prisma = new PrismaClient();
 
+type CheckoutTransactionParams = {
+  amount: number;       // In dollars (e.g. 10 for $10)
+  plan: string;
+  credits: number;
+  buyerId: string;      // Use string since Prisma User.id is string
+};
+
+type CreateTransactionParams = {
+  stripeId: string;
+  amount: number;
+  plan?: string;
+  credits?: number;
+  buyerId: string;
+};
+
 export async function checkoutCredits(transaction: CheckoutTransactionParams) {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2022-11-15",
+    });
 
-    const amount = Number(transaction.amount) * 100;
+    const amountInCents = Math.round(transaction.amount * 100);
 
     const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
       line_items: [
         {
           price_data: {
             currency: "usd",
-            unit_amount: amount,
+            unit_amount: amountInCents,
             product_data: {
               name: transaction.plan,
             },
@@ -30,7 +48,7 @@ export async function checkoutCredits(transaction: CheckoutTransactionParams) {
       metadata: {
         plan: transaction.plan,
         credits: transaction.credits.toString(),
-        buyerId: transaction.buyerId.toString(),
+        buyerId: transaction.buyerId,
       },
       mode: "payment",
       success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile`,
@@ -40,12 +58,13 @@ export async function checkoutCredits(transaction: CheckoutTransactionParams) {
     redirect(session.url!);
   } catch (error) {
     handleError(error);
+    throw error; // Rethrow so caller can handle if needed
   }
 }
 
 export async function createTransaction(transaction: CreateTransactionParams) {
   try {
-    // Create a new transaction with Prisma
+    // Create a new transaction record
     const newTransaction = await prisma.transaction.create({
       data: {
         stripeId: transaction.stripeId,
@@ -56,11 +75,14 @@ export async function createTransaction(transaction: CreateTransactionParams) {
       },
     });
 
-    // Update user's credits
-    await updateCredits(transaction.buyerId, transaction.credits);
+    // Update user's credit balance (+ credits)
+    if (transaction.credits) {
+      await updateCredits(transaction.buyerId, transaction.credits);
+    }
 
     return newTransaction;
   } catch (error) {
     handleError(error);
+    throw error;
   }
 }
