@@ -24,10 +24,10 @@ enum AccountType {
 
 model User {
   id            String        @id @default(cuid())
-  clerkId       String        @unique
+  clerkId       String?       @unique   // ✅ NOW OPTIONAL
   email         String        @unique
   username      String        @unique
-  photo         String
+  photo         String?
 
   firstName     String?
   lastName      String?
