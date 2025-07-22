@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 import { Collection } from "@/components/shared/Collection";
 import Header from "@/components/shared/Header";
@@ -7,17 +9,25 @@ import { getUserImages } from "@/lib/actions/image.actions";
 import { getUserById } from "@/lib/actions/user.actions";
 
 async function getCurrentUserId() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
-    credentials: "include",
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.userId;
+  // ✅ Get cookies from the request context
+  const cookieStore = cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) return null;
+
+  try {
+    // ✅ Verify the JWT with your secret
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    return decoded.userId;
+  } catch {
+    return null;
+  }
 }
 
 const Profile = async ({ searchParams }: SearchParamProps) => {
   const page = Number(searchParams?.page) || 1;
 
+  // ✅ Now uses secure server-side cookie reading
   const userId = await getCurrentUserId();
 
   if (!userId) redirect("/sign-in");
