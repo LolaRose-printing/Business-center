@@ -26,35 +26,34 @@ const SignUpPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
+  
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-
+  
     if (accountType === 'BUSINESS') {
       if (!companyName || companyName.length < 3 || companyName.length > 128) {
         setError('Company name must be between 3 and 128 characters');
         return;
       }
     }
-
+  
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/register`, {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           username,
           password,
-          provider: 'LOCAL',
           company: accountType === 'BUSINESS' ? companyName : null,
-          accountType,
+          userType: accountType,  // ✅ matches your backend
         }),
       });
-
+  
       if (res.ok) {
-        router.push('/profile');
+        router.push('/sign-in'); // ✅ or '/profile' if you prefer
       } else {
         const errData = await res.json();
         setError(errData.message || 'Sign up failed');
@@ -63,7 +62,7 @@ const SignUpPage = () => {
       setError('Network error, please try again.');
     }
   };
-
+  
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-tr from-purple-700 via-purple-900 to-black px-6 py-12 overflow-hidden">
       {/* Background flair blobs */}

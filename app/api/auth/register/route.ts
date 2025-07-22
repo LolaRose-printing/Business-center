@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   if (!email || !password || !userType) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
   }
-  
+
   if (company && (company.length < 3 || company.length > 128)) {
     return NextResponse.json({ message: "Company must be 3-128 characters" }, { status: 400 });
   }
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
     const passwordHash = await hashPassword(password);
 
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email,
         passwordHash,
