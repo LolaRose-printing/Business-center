@@ -34,7 +34,7 @@ model User {
   passwordHash  String  
 
   accountType   AccountType   @default(INDIVIDUAL)
-  companyName   String?       // Optional; only for BUSINESS
+  company       String?       // Optional; only for BUSINESS
 
   planId        Int           @default(1)
   creditBalance Int           @default(10)
