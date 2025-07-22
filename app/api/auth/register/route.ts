@@ -37,6 +37,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "User registered successfully" }, { status: 201 });
   } catch (err) {
+    console.error("REGISTER API ERROR:", err);
     return NextResponse.json({ message: "Server error", error: err.message }, { status: 500 });
   }
 }
