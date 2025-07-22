@@ -12,9 +12,9 @@ const SignInPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    console.log('Submitting login for:', email);
 
     try {
-      // Call your local Next.js API route
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -22,12 +22,16 @@ const SignInPage = () => {
       });
 
       if (res.ok) {
-        router.push('/profile');
+        console.log('Login successful');
+        // Wait a tick to ensure router processes the navigation smoothly
+        await router.push('/profile');
       } else {
         const errData = await res.json();
+        console.error('Login failed:', errData.message);
         setError(errData.message || 'Login failed');
       }
-    } catch {
+    } catch (err) {
+      console.error('Network or server error:', err);
       setError('Network error, please try again.');
     }
   };
