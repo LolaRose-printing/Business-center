@@ -3,8 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://server.lolaprint.us';
-
 const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,15 +14,11 @@ const SignInPage = () => {
     setError('');
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      // Call your local Next.js API route
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          email,
-          password,
-          provider: 'LOCAL',
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (res.ok) {
