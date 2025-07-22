@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';  // your prisma client
-import { hashPassword } from '@/lib/auth'; // your hashing util
+import bcrypt from 'bcrypt';
+import prisma from '@/lib/prisma'; // your Prisma client import
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
+    const body = await req.json();
 
     const {
       email,
@@ -16,25 +16,29 @@ export async function POST(request: Request) {
       lastName,
     } = body;
 
-    // Validate inputs...
+    if (!email || !username || !password) {
+      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+    }
 
-    const passwordHash = await hashPassword(password);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         email,
         username,
         passwordHash,
-        company: company || null,
         accountType,
-        firstName: firstName || null,
-        lastName: lastName || null,
+        company,
+        firstName,
+        lastName,
+        // other defaults will be used automatically
       },
     });
 
-    return NextResponse.json({ message: 'User created', userId: user.id }, { status: 201 });
+    return NextResponse.json({ userId: newUser.id }, { status: 201 });
+
   } catch (error) {
-    console.error('REGISTER API ERROR:', error);
-    return NextResponse.json({ message: 'Registration failed' }, { status: 500 });
+    console.error('Register API error:', error);
+    return NextResponse.json({ message: 'Server error' }, { status: 500 });
   }
 }
