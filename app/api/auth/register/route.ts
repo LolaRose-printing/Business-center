@@ -1,43 +1,40 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { hashPassword } from "@/lib/auth";
-
-const prisma = new PrismaClient();
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';  // your prisma client
+import { hashPassword } from '@/lib/auth'; // your hashing util
 
 export async function POST(request: Request) {
-  const { email, password, company, userType, username, firstName, lastName } = await request.json();
-
-  if (!email || !password || !userType) {
-    return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
-  }
-
-  if (company && (company.length < 3 || company.length > 128)) {
-    return NextResponse.json({ message: "Company must be 3-128 characters" }, { status: 400 });
-  }
-
   try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return NextResponse.json({ message: "Email already registered" }, { status: 409 });
-    }
+    const body = await request.json();
+
+    const {
+      email,
+      username,
+      password,
+      company,
+      accountType,
+      firstName,
+      lastName,
+    } = body;
+
+    // Validate inputs...
 
     const passwordHash = await hashPassword(password);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
-        passwordHash,
-        company,
-        userType,
         username,
-        firstName,
-        lastName,
+        passwordHash,
+        company: company || null,
+        accountType,
+        firstName: firstName || null,
+        lastName: lastName || null,
       },
     });
 
-    return NextResponse.json({ message: "User registered successfully" }, { status: 201 });
-  } catch (err) {
-    console.error("REGISTER API ERROR:", err);
-    return NextResponse.json({ message: "Server error", error: err.message }, { status: 500 });
+    return NextResponse.json({ message: 'User created', userId: user.id }, { status: 201 });
+  } catch (error) {
+    console.error('REGISTER API ERROR:', error);
+    return NextResponse.json({ message: 'Registration failed' }, { status: 500 });
   }
 }
