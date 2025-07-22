@@ -1,59 +1,60 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { navLinks } from "@/constants"
-import Image from "next/image"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "../ui/button"
+import { useState, useEffect, useRef } from "react";
+import { navLinks } from "@/constants";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "../ui/button";
 
 // Simulated auth hook — replace with your real backend logic
 const useAuth = () => {
-  const [user, setUser] = useState<{ name: string; avatarUrl?: string } | null>(null)
+  const [user, setUser] = useState<{ name: string; avatarUrl?: string } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setUser({
         name: "Jane Doe",
         avatarUrl: "/assets/images/avatar-placeholder.png",
-      })
-    }, 1000)
+      });
+      setLoading(false);
+    }, 1000);
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
   return {
     user,
     isAuthenticated: !!user,
+    loading,
     logout: () => {
-      setUser(null)
-      window.location.href = "/sign-in"
+      setUser(null);
+      window.location.href = "/sign-in";
     },
-  }
-}
+  };
+};
 
 const UserDropdown = ({
   user,
   onLogout,
 }: {
-  user: { name: string; avatarUrl?: string }
-  onLogout: () => void
+  user: { name: string; avatarUrl?: string };
+  onLogout: () => void;
 }) => {
-  const [open, setOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false)
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false);
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div ref={dropdownRef} className="relative">
@@ -61,6 +62,7 @@ const UserDropdown = ({
         onClick={() => setOpen((prev) => !prev)}
         className="flex items-center gap-2 focus:outline-none p-4 w-full text-left"
         aria-label="User menu"
+        type="button"
       >
         {user.avatarUrl ? (
           <Image
@@ -90,29 +92,34 @@ const UserDropdown = ({
           <button
             onClick={onLogout}
             className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+            type="button"
           >
             Logout
           </button>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 const Sidebar = () => {
-  const pathname = usePathname()
-  const { user, isAuthenticated, logout } = useAuth()
+  const pathname = usePathname();
+  const { user, isAuthenticated, loading, logout } = useAuth();
+
+  if (loading) {
+    // Optionally show a loading indicator or empty sidebar while auth status is resolving
+    return (
+      <aside className="sidebar flex items-center justify-center p-4">
+        <p>Loading...</p>
+      </aside>
+    );
+  }
 
   return (
     <aside className="sidebar">
       <div className="flex size-full flex-col gap-4">
         <Link href="/" className="sidebar-logo">
-          <Image
-            src="/assets/images/logo.png"
-            alt="logo"
-            width={180}
-            height={28}
-          />
+          <Image src="/assets/images/logo.png" alt="logo" width={180} height={28} />
         </Link>
 
         <nav className="sidebar-nav">
@@ -120,8 +127,7 @@ const Sidebar = () => {
             <>
               <ul className="sidebar-nav_elements">
                 {navLinks.slice(0, 6).map((link) => {
-                  const isActive = link.route === pathname
-
+                  const isActive = link.route === pathname;
                   return (
                     <li
                       key={link.route}
@@ -140,14 +146,13 @@ const Sidebar = () => {
                         {link.label}
                       </Link>
                     </li>
-                  )
+                  );
                 })}
               </ul>
 
               <ul className="sidebar-nav_elements">
                 {navLinks.slice(6).map((link) => {
-                  const isActive = link.route === pathname
-
+                  const isActive = link.route === pathname;
                   return (
                     <li
                       key={link.route}
@@ -166,7 +171,7 @@ const Sidebar = () => {
                         {link.label}
                       </Link>
                     </li>
-                  )
+                  );
                 })}
 
                 <li className="flex-center cursor-pointer gap-2 p-4">
@@ -182,7 +187,7 @@ const Sidebar = () => {
         </nav>
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

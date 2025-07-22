@@ -19,24 +19,26 @@ import { Button } from "../ui/button";
 
 import { Search } from "./Search";
 
+interface CollectionProps {
+  images: IImage[];
+  totalPages?: number;
+  page: number;
+  hasSearch?: boolean;
+}
+
 export const Collection = ({
   hasSearch = false,
   images,
   totalPages = 1,
   page,
-}: {
-  images: IImage[];
-  totalPages?: number;
-  page: number;
-  hasSearch?: boolean;
-}) => {
+}: CollectionProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // PAGINATION HANDLER
-  const onPageChange = (action: string) => {
-    const pageValue = action === "next" ? Number(page) + 1 : Number(page) - 1;
+  const onPageChange = (action: "next" | "prev") => {
+    const pageValue = action === "next" ? page + 1 : page - 1;
 
+    // Generate new URL with updated page query parameter
     const newUrl = formUrlQuery({
       searchParams: searchParams.toString(),
       key: "page",
@@ -69,7 +71,7 @@ export const Collection = ({
         <Pagination className="mt-10">
           <PaginationContent className="flex w-full">
             <Button
-              disabled={Number(page) <= 1}
+              disabled={page <= 1}
               className="collection-btn"
               onClick={() => onPageChange("prev")}
             >
@@ -83,7 +85,7 @@ export const Collection = ({
             <Button
               className="button w-32 bg-purple-gradient bg-cover text-white"
               onClick={() => onPageChange("next")}
-              disabled={Number(page) >= totalPages}
+              disabled={page >= totalPages}
             >
               <PaginationNext className="hover:bg-transparent hover:text-white" />
             </Button>
@@ -95,6 +97,8 @@ export const Collection = ({
 };
 
 const Card = ({ image }: { image: IImage }) => {
+  const transformationTypeKey = image.transformationType as keyof typeof transformationTypes;
+
   return (
     <li>
       <Link href={`/transformations/${image._id}`} className="collection-card">
@@ -113,11 +117,7 @@ const Card = ({ image }: { image: IImage }) => {
             {image.title}
           </p>
           <Image
-            src={`/assets/icons/${
-              transformationTypes[
-                image.transformationType as TransformationTypeKey
-              ].icon
-            }`}
+            src={`/assets/icons/${transformationTypes[transformationTypeKey]?.icon || "default-icon.svg"}`}
             alt={image.title}
             width={24}
             height={24}

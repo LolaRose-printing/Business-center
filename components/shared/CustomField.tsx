@@ -12,21 +12,23 @@ import {
 
 import { formSchema } from "./TransformationForm";
 
+type FormData = z.infer<typeof formSchema>;
+
 type CustomFieldProps = {
-  control: Control<z.infer<typeof formSchema>> | undefined;
+  control: Control<FormData> | undefined;
   render: (props: { field: any }) => React.ReactNode;
-  name: keyof z.infer<typeof formSchema>;
+  name: keyof FormData;
   formLabel?: string;
   className?: string;
 };
 
-export const CustomField = ({
+export const CustomField: React.FC<CustomFieldProps> = ({
   control,
   render,
   name,
   formLabel,
   className,
-}: CustomFieldProps) => {
+}) => {
   return (
     <FormField
       control={control}
