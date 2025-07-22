@@ -6,28 +6,22 @@ const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
   const token = parseTokenCookie(request.headers.get("cookie") || undefined);
-  if (!token) return NextResponse.json({ user: null }, { status: 401 });
+  if (!token) return NextResponse.json({ userId: null }, { status: 401 });
 
   try {
     const decoded = verifyToken(token) as { userId: string };
+
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,
-        email: true,
-        company: true,
-        userType: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        creditBalance: true,
       },
     });
 
-    if (!user) return NextResponse.json({ user: null }, { status: 401 });
+    if (!user) return NextResponse.json({ userId: null }, { status: 401 });
 
-    return NextResponse.json({ user });
+    return NextResponse.json({ userId: user.id });
   } catch (err) {
-    return NextResponse.json({ user: null }, { status: 401 });
+    return NextResponse.json({ userId: null }, { status: 401 });
   }
 }
