@@ -49,10 +49,9 @@ export const navLinks = [
     url: "https://lola365.lolaprint.us",
     icon: "/assets/icons/4.png",
   },
-  
   {
     label: "Store",
-    link: "/credits",
+    route: "/credits",
     icon: "/assets/icons/bag.svg",
   },
 ];
