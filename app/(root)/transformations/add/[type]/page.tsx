@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 
 async function getCurrentUserId() {
   const cookieStore = cookies();
-  const token = cookieStore.get('your-auth-cookie-name')?.value;
+  const token = cookieStore.get('token')?.value;
 
   if (!token) return null;
 
