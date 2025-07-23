@@ -22,7 +22,8 @@ export default function ProfileImageUpload({
     reader.readAsDataURL(file);
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("profilePicture", file);
+
 
     await fetch("/api/profile/upload", {
       method: "POST",
