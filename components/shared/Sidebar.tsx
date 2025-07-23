@@ -13,6 +13,7 @@ const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Simulate fetching user data (e.g. from API/localStorage)
     const timer = setTimeout(() => {
       setUser({
         name: "Jane Doe",
@@ -107,7 +108,7 @@ const Sidebar = () => {
   const { user, isAuthenticated, loading, logout } = useAuth();
 
   if (loading) {
-    // Optionally show a loading indicator or empty sidebar while auth status is resolving
+    // Show loading while auth status is resolving
     return (
       <aside className="sidebar flex items-center justify-center p-4">
         <p>Loading...</p>
