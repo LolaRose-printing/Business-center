@@ -1,3 +1,4 @@
+// app/(root)/credits/page.tsx
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
@@ -7,17 +8,21 @@ import { plans } from "@/constants";
 import { getUserById } from "@/lib/actions/user.actions";
 import Checkout from "@/components/shared/Checkout";
 
-// Replace this with your actual way to get current user ID (e.g., from session cookie or JWT)
-async function getCurrentUserId() {
-  // Example: call your backend endpoint to get session info
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
-    headers: { cookie: "your-cookie-here" }, // pass cookies for auth
-    credentials: "include",
-  });
+import { cookies } from "next/headers";
+import { parseTokenCookie, verifyToken } from "@/lib/auth";
 
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.userId; // adjust based on your API response
+// Proper server-side user ID retrieval from cookie and token
+async function getCurrentUserId() {
+  const cookieStore = cookies();
+  const token = parseTokenCookie(cookieStore.toString());
+  if (!token) return null;
+
+  try {
+    const decoded = verifyToken(token) as { userId: string };
+    return decoded.userId;
+  } catch (error) {
+    return null;
+  }
 }
 
 const Credits = async () => {
@@ -69,7 +74,6 @@ const Credits = async () => {
                   Free Consumable
                 </Button>
               ) : (
-                // No Clerk <SignedIn> wrapper, just check user is present
                 user && (
                   <Checkout
                     plan={plan.name}
