@@ -17,20 +17,52 @@ const Home = async ({ searchParams }: SearchParamProps) => {
           Your Partner in Business Growth & Print Solutions
         </h1>
         <ul className="flex-center w-full gap-20">
-          {navLinks.map((link) => (
-            <Link
-              key={link.url}
-              href={link.url}
-              className="flex-center flex-col gap-2"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <li className="flex-center w-fit rounded-full bg-white p-4">
-                <Image src={link.icon} alt={link.label} width={24} height={24} />
+          {navLinks.map((link, index) => {
+            const href = link.route || link.url || "#"; // fallback
+            const isExternal = !!link.url;
+
+            return (
+              <li key={href} className="flex-center flex-col gap-2">
+                {isExternal ? (
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-center flex-col gap-2"
+                  >
+                    <div className="flex-center w-fit rounded-full bg-white p-4">
+                      <Image
+                        src={link.icon}
+                        alt={link.label}
+                        width={24}
+                        height={24}
+                      />
+                    </div>
+                    <p className="p-14-medium text-center text-white">
+                      {link.label}
+                    </p>
+                  </a>
+                ) : (
+                  <Link
+                    href={link.route}
+                    className="flex-center flex-col gap-2"
+                  >
+                    <div className="flex-center w-fit rounded-full bg-white p-4">
+                      <Image
+                        src={link.icon}
+                        alt={link.label}
+                        width={24}
+                        height={24}
+                      />
+                    </div>
+                    <p className="p-14-medium text-center text-white">
+                      {link.label}
+                    </p>
+                  </Link>
+                )}
               </li>
-              <p className="p-14-medium text-center text-white">{link.label}</p>
-            </Link>
-          ))}
+            );
+          })}
         </ul>
       </section>
 
