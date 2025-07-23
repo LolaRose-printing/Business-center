@@ -30,13 +30,29 @@ export const navLinks = [
     icon: "/assets/icons/camera.svg",
   },
   {
-    label: "Profile",
-    route: "/profile",
-    icon: "/assets/icons/profile.svg",
+    label: "Online printing",
+    url: "https://print.yourdomain.com",
+    icon: "/assets/images/1.png",
   },
   {
-    label: "Buy Credits",
-    route: "/credits",
+    label: "Design Media",
+    url: "https://design.yourdomain.com",
+    icon: "/assets/images/2.png",
+  },
+  {
+    label: "Rosehub",
+    url: "https://rosehub.yourdomain.com",
+    icon: "/assets/images/3.png",
+  },
+  {
+    label: "Profile",
+    url: "https://profile.yourdomain.com",
+    icon: "/assets/icons/profile.svg",
+  },
+  
+  {
+    label: "Store",
+    link: "/credits",
     icon: "/assets/icons/bag.svg",
   },
 ];
