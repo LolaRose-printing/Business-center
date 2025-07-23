@@ -7,37 +7,32 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 
-// Persistent auth simulation using localStorage
+// Simulated auth hook — replace with your real backend logic
 const useAuth = () => {
   const [user, setUser] = useState<{ name: string; avatarUrl?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check localStorage for saved user on mount
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    // Simulate fetching user data (e.g. from API/localStorage)
+    const timer = setTimeout(() => {
+      setUser({
+        name: "Jane Doe",
+        avatarUrl: "/assets/images/avatar-placeholder.png",
+      });
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
-
-  const login = (userData: { name: string; avatarUrl?: string }) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    window.location.href = "/sign-in";
-  };
 
   return {
     user,
     isAuthenticated: !!user,
     loading,
-    login,
-    logout,
+    logout: () => {
+      setUser(null);
+      window.location.href = "/sign-in";
+    },
   };
 };
 
@@ -57,6 +52,7 @@ const UserDropdown = ({
         setOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -111,15 +107,8 @@ const Sidebar = () => {
   const pathname = usePathname();
   const { user, isAuthenticated, loading, logout } = useAuth();
 
-  // For demo: automatically login Jane Doe if not logged in (remove this in prod)
-  useEffect(() => {
-    if (!isAuthenticated && !loading) {
-      // Uncomment below line if you want to auto-login on sidebar load
-      // login({ name: "Jane Doe", avatarUrl: "/assets/images/avatar-placeholder.png" });
-    }
-  }, [isAuthenticated, loading]);
-
   if (loading) {
+    // Show loading while auth status is resolving
     return (
       <aside className="sidebar flex items-center justify-center p-4">
         <p>Loading...</p>
