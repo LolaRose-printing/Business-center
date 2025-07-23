@@ -5,18 +5,17 @@ import { cookies } from "next/headers";
 
 import { Collection } from "@/components/shared/Collection";
 import Header from "@/components/shared/Header";
+import ProfileImageUpload from "@/components/profile/ProfileImageUpload"; // <-- import upload component
 import { getUserImages } from "@/lib/actions/image.actions";
 import { getUserById } from "@/lib/actions/user.actions";
 
 async function getCurrentUserId() {
-  // ✅ Get cookies from the request context
   const cookieStore = cookies();
   const token = cookieStore.get("token")?.value;
 
   if (!token) return null;
 
   try {
-    // ✅ Verify the JWT with your secret
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
     return decoded.userId;
   } catch {
@@ -27,19 +26,21 @@ async function getCurrentUserId() {
 const Profile = async ({ searchParams }: SearchParamProps) => {
   const page = Number(searchParams?.page) || 1;
 
-  // ✅ Now uses secure server-side cookie reading
   const userId = await getCurrentUserId();
 
   if (!userId) redirect("/sign-in");
 
   const user = await getUserById(userId);
-  const images = await getUserImages({ page, userId: user._id });
+  const images = await getUserImages({ page, userId: user.id }); // <-- user.id, not user._id
 
   return (
     <>
       <Header title="Profile" />
 
       <section className="profile">
+        {/* Show profile picture upload */}
+        <ProfileImageUpload currentPhotoUrl={user.photo} />
+
         <div className="profile-balance">
           <p className="p-14-medium md:p-16-medium">CREDITS AVAILABLE</p>
           <div className="mt-4 flex items-center gap-4">
@@ -70,11 +71,7 @@ const Profile = async ({ searchParams }: SearchParamProps) => {
       </section>
 
       <section className="mt-8 md:mt-14">
-        <Collection
-          images={images?.data}
-          totalPages={images?.totalPages}
-          page={page}
-        />
+        <Collection images={images?.data} totalPages={images?.totalPages} page={page} />
       </section>
     </>
   );
