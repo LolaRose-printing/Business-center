@@ -7,22 +7,35 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 
-// Simulated auth hook — replace with your real backend logic
+// Real API-backed auth hook fetching user from /api/auth/me
 const useAuth = () => {
   const [user, setUser] = useState<{ name: string; avatarUrl?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching user data (e.g. from API/localStorage)
-    const timer = setTimeout(() => {
-      setUser({
-        name: "Jane Doe",
-        avatarUrl: "/assets/images/avatar-placeholder.png",
-      });
+    async function fetchUser() {
+      try {
+        const res = await fetch("/api/auth/me", { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            setUser({
+              name: data.user.name,
+              avatarUrl: data.user.avatarUrl || "/assets/images/avatar-placeholder.png",
+            });
+          } else {
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      }
       setLoading(false);
-    }, 1000);
+    }
 
-    return () => clearTimeout(timer);
+    fetchUser();
   }, []);
 
   return {
@@ -108,7 +121,6 @@ const Sidebar = () => {
   const { user, isAuthenticated, loading, logout } = useAuth();
 
   if (loading) {
-    // Show loading while auth status is resolving
     return (
       <aside className="sidebar flex items-center justify-center p-4">
         <p>Loading...</p>
