@@ -31,23 +31,23 @@ export const navLinks = [
   },
   {
     label: "Online printing",
-    url: "https://print.yourdomain.com",
+    url: "https://lolaprint.us",
     icon: "/assets/images/1.png",
   },
   {
     label: "Design Media",
-    url: "https://design.yourdomain.com",
+    url: "https://design.lolaprint.us",
     icon: "/assets/images/2.png",
   },
   {
     label: "Rosehub",
-    url: "https://rosehub.yourdomain.com",
+    url: "https://rosehub.lolaprint.us",
     icon: "/assets/images/3.png",
   },
   {
-    label: "Profile",
-    url: "https://profile.yourdomain.com",
-    icon: "/assets/icons/profile.svg",
+    label: "Lola365",
+    url: "https://lola365.lolaprint.us",
+    icon: "/assets/icons/4.png",
   },
   
   {
