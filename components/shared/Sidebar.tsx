@@ -7,34 +7,34 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 
-// Real API-backed auth hook fetching user from /api/auth/me
-const useAuth = () => {
+// ✅ Full real auth hook with refresh
+export const useAuth = () => {
   const [user, setUser] = useState<{ name: string; avatarUrl?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await fetch("/api/auth/me", { credentials: "include" });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user) {
-            setUser({
-              name: data.user.name,
-              avatarUrl: data.user.avatarUrl || "/assets/images/avatar-placeholder.png",
-            });
-          } else {
-            setUser(null);
-          }
+  const fetchUser = async () => {
+    try {
+      const res = await fetch("/api/auth/me", { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.user) {
+          setUser({
+            name: data.user.name,
+            avatarUrl: data.user.avatarUrl || "/assets/images/avatar-placeholder.png",
+          });
         } else {
           setUser(null);
         }
-      } catch {
+      } else {
         setUser(null);
       }
-      setLoading(false);
+    } catch {
+      setUser(null);
     }
+    setLoading(false);
+  };
 
+  useEffect(() => {
     fetchUser();
   }, []);
 
@@ -42,6 +42,7 @@ const useAuth = () => {
     user,
     isAuthenticated: !!user,
     loading,
+    refresh: fetchUser, // ✅ used by Profile upload
     logout: () => {
       setUser(null);
       window.location.href = "/sign-in";

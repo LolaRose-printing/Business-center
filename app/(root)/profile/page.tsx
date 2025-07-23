@@ -5,9 +5,16 @@ import { cookies } from "next/headers";
 
 import { Collection } from "@/components/shared/Collection";
 import Header from "@/components/shared/Header";
-import ProfileImageUpload from "@/components/profile/ProfileImageUpload"; // <-- import upload component
+import ProfileImageUpload from "@/components/profile/ProfileImageUpload";
+
 import { getUserImages } from "@/lib/actions/image.actions";
 import { getUserById } from "@/lib/actions/user.actions";
+
+type SearchParamProps = {
+  searchParams: {
+    page?: string;
+  };
+};
 
 async function getCurrentUserId() {
   const cookieStore = cookies();
@@ -17,7 +24,7 @@ async function getCurrentUserId() {
 
   try {
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-    return decoded.userId;
+    return decoded.userId as string;
   } catch {
     return null;
   }
@@ -31,14 +38,17 @@ const Profile = async ({ searchParams }: SearchParamProps) => {
   if (!userId) redirect("/sign-in");
 
   const user = await getUserById(userId);
-  const images = await getUserImages({ page, userId: user.id }); // <-- user.id, not user._id
+
+  if (!user) redirect("/sign-in");
+
+  const images = await getUserImages({ page, userId: user.id });
 
   return (
     <>
       <Header title="Profile" />
 
       <section className="profile">
-        {/* Show profile picture upload */}
+        {/* ✅ Profile picture uploader */}
         <ProfileImageUpload currentPhotoUrl={user.photo} />
 
         <div className="profile-balance">
@@ -60,18 +70,22 @@ const Profile = async ({ searchParams }: SearchParamProps) => {
           <div className="mt-4 flex items-center gap-4">
             <Image
               src="/assets/icons/photo.svg"
-              alt="coins"
+              alt="photo icon"
               width={50}
               height={50}
               className="size-9 md:size-12"
             />
-            <h2 className="h2-bold text-dark-600">{images?.data.length}</h2>
+            <h2 className="h2-bold text-dark-600">{images?.data.length || 0}</h2>
           </div>
         </div>
       </section>
 
       <section className="mt-8 md:mt-14">
-        <Collection images={images?.data} totalPages={images?.totalPages} page={page} />
+        <Collection
+          images={images?.data}
+          totalPages={images?.totalPages}
+          page={page}
+        />
       </section>
     </>
   );

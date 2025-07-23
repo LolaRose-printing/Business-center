@@ -1,59 +1,75 @@
 "use client";
 
-import { useState, useRef } from "react";
+import React, { useState } from "react";
 
-export default function ProfileImageUpload({ currentPhotoUrl }: { currentPhotoUrl?: string }) {
-  const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(currentPhotoUrl || "");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export default function ProfileImageUpload({
+  currentPhotoUrl,
+  refreshUser, // ✅ This lets you update Sidebar avatar
+}: {
+  currentPhotoUrl: string | null | undefined;
+  refreshUser: () => void; // ✅ required!
+}) {
+  const [previewUrl, setPreviewUrl] = useState(currentPhotoUrl);
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!e.target.files?.[0]) return;
+  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    const file = e.target.files[0];
-    setPreview(URL.createObjectURL(file));
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
 
     const formData = new FormData();
-    formData.append("profilePicture", file);
+    formData.append("file", file);
 
-    setUploading(true);
-    try {
-      const res = await fetch("/api/user/upload-profile-picture", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-      if (!res.ok) {
-        alert("Upload failed");
-      }
-    } catch {
-      alert("Upload failed");
-    } finally {
-      setUploading(false);
-    }
-  }
+    await fetch("/api/profile/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    // ✅ After upload, refresh user in Sidebar
+    refreshUser();
+  };
 
   return (
-    <div className="profile-image-upload">
-      <img
-        src={preview || "/assets/images/avatar-placeholder.png"}
-        alt="Profile picture"
-        className="w-24 h-24 rounded-full object-cover"
-      />
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-      />
-      <button
-        onClick={() => fileInputRef.current?.click()}
-        disabled={uploading}
-        className="mt-2 px-4 py-2 bg-purple-600 text-white rounded"
-      >
-        {uploading ? "Uploading..." : "Change Profile Picture"}
-      </button>
+    <div className="flex flex-col items-center mb-8">
+      <div className="relative">
+        <img
+          src={previewUrl || "/assets/images/avatar-placeholder.png"}
+          alt="Profile"
+          className="w-24 h-24 rounded-full object-cover border border-gray-300"
+        />
+
+        <label
+          htmlFor="file-upload"
+          className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-1 cursor-pointer hover:bg-gray-100 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-gray-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          accept="image/*"
+          onChange={handleUpload}
+          className="hidden"
+        />
+      </div>
+      <p className="text-sm text-gray-500 mt-2">Click icon to change photo</p>
     </div>
   );
 }
