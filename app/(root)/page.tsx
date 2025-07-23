@@ -1,5 +1,5 @@
 import { Collection } from "@/components/shared/Collection";
-import { navLinks } from "@/constants";
+import { externalNavLinks } from "@/constants"; // ✅ use your new export!
 import { getAllImages } from "@/lib/actions/image.actions";
 import Image from "next/image";
 
@@ -9,9 +9,6 @@ const Home = async ({ searchParams }: SearchParamProps) => {
 
   const images = await getAllImages({ page, searchQuery });
 
-  // ✅ Filter to ONLY links that have `url`
-  const externalLinks = navLinks.filter(link => !!link.url);
-
   return (
     <>
       <section className="home">
@@ -19,7 +16,7 @@ const Home = async ({ searchParams }: SearchParamProps) => {
           Your Partner in Business Growth & Print Solutions
         </h1>
         <ul className="flex-center w-full gap-20">
-          {externalLinks.map((link) => (
+          {externalNavLinks.map((link) => (
             <li key={link.url} className="flex-center flex-col gap-2">
               <a
                 href={link.url}

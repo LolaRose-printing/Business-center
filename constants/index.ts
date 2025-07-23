@@ -30,6 +30,19 @@ export const navLinks = [
     icon: "/assets/icons/camera.svg",
   },
   {
+    label: "Profile",
+    route: "/profile",
+    icon: "/assets/icons/profile.svg",
+  },
+  {
+    label: "Buy Credits",
+    route: "/credits",
+    icon: "/assets/icons/bag.svg",
+  },
+];
+
+export const externalNavLinks = [
+  {
     label: "Online printing",
     url: "https://lolaprint.us",
     icon: "/assets/images/1.png",
@@ -48,11 +61,6 @@ export const navLinks = [
     label: "Lola365",
     url: "https://lola365.lolaprint.us",
     icon: "/assets/images/4.png",
-  },
-  {
-    label: "Store",
-    route: "/credits",
-    icon: "/assets/icons/bag.svg",
   },
 ];
 
