@@ -28,7 +28,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Get the uploaded file
   const formData = await request.formData();
   const file = formData.get("profilePicture") as File | null;
 
@@ -36,15 +35,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
 
+  // Sanitize filename: remove spaces, parentheses, and other special chars
+  const sanitizeFileName = (name: string) =>
+    name
+      .replace(/\s+/g, "_")          // spaces to _
+      .replace(/[()]/g, "")          // remove parentheses
+      .replace(/[^a-zA-Z0-9_.-]/g, ""); // remove other unsafe chars
+
   const timestamp = Date.now();
-  const safeName = file.name.replace(/\s+/g, "_");
+  const safeName = sanitizeFileName(file.name);
   const fileName = `${userId}-${timestamp}-${safeName}`;
 
-  // Where to save it
   const uploadDir = path.join(process.cwd(), "public", "uploads");
   const filePath = path.join(uploadDir, fileName);
 
-  // Make sure uploads/ exists
   await mkdir(uploadDir, { recursive: true });
 
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -52,7 +56,6 @@ export async function POST(request: Request) {
 
   const photoUrl = `/uploads/${fileName}`;
 
-  // Update user record
   await prisma.user.update({
     where: { id: userId },
     data: { photo: photoUrl },
