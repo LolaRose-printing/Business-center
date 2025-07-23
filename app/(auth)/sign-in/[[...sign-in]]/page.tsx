@@ -1,5 +1,4 @@
 'use client';
-import { cookies } from 'next/headers'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -19,11 +18,12 @@ const SignInPage = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // <-- Added this line
       });
 
       if (res.ok) {
         console.log('Login successful');
-        // Wait a tick to ensure router processes the navigation smoothly
+        // Redirect user to profile or intended page
         await router.push('/profile');
       } else {
         const errData = await res.json();
