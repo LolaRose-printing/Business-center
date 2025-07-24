@@ -12,7 +12,7 @@ const IBMPlex = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "lolarose",
+  title: "Lolarose Business Center",
   description: "The Print & Business Hub for Modern Entrepreneurs",
 };
 
