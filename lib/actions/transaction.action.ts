@@ -24,43 +24,40 @@ type CreateTransactionParams = {
 };
 
 export async function checkoutCredits(transaction: CheckoutTransactionParams) {
-  try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2022-11-15",
-    });
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2022-11-15",
+  });
 
-    const amountInCents = Math.round(transaction.amount * 100);
+  const amountInCents = Math.round(transaction.amount * 100);
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            unit_amount: amountInCents,
-            product_data: {
-              name: transaction.plan,
-            },
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price_data: {
+          currency: "usd",
+          unit_amount: amountInCents,
+          product_data: {
+            name: transaction.plan,
           },
-          quantity: 1,
         },
-      ],
-      metadata: {
-        plan: transaction.plan,
-        credits: transaction.credits.toString(),
-        buyerId: transaction.buyerId,
+        quantity: 1,
       },
-      mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/`,
-    });
+    ],
+    metadata: {
+      plan: transaction.plan,
+      credits: transaction.credits.toString(),
+      buyerId: transaction.buyerId,
+    },
+    mode: "payment",
+    success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile`,
+    cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/`,
+  });
 
-    redirect(session.url!);
-  } catch (error) {
-    handleError(error);
-    throw error; // Rethrow so caller can handle if needed
-  }
+  // Redirect will throw internally to trigger a redirect in Next.js
+  redirect(session.url!);
 }
+
 
 export async function createTransaction(transaction: CreateTransactionParams) {
   try {
