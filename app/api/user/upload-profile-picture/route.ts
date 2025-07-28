@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma"; // use singleton prisma instance
 import { parseTokenCookie, verifyToken } from "@/lib/auth";
 
-const prisma = new PrismaClient();
-
-// New config export per Next.js 14:
 export const routeConfig = {
-  runtime: "edge",  // or "nodejs" if you need Node APIs (fs etc)
-  // Next.js 14 currently does not support disabling bodyParser like before,
-  // So you'll handle multipart/form-data manually as you do.
+  runtime: "nodejs",
 };
 
 export async function POST(request: Request) {
@@ -25,7 +20,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Parse multipart form-data (profilePicture)
   const formData = await request.formData();
   const file = formData.get("profilePicture") as File | null;
 
@@ -33,11 +27,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
 
-  // Generate unique filename
+  // sanitize file.name here if you want
   const fileName = `${userId}-${Date.now()}-${file.name}`;
+  // Buffer is supported in nodejs runtime
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Your upload logic here (e.g., upload to cloud or save locally)
+  // Implement your upload logic here (filesystem, cloud storage, etc)
 
   const photoUrl = `/uploads/${fileName}`;
 

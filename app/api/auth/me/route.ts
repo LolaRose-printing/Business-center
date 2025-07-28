@@ -4,6 +4,10 @@ import { parseTokenCookie, verifyToken } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
+export const routeConfig = {
+  runtime: "nodejs",
+};
+
 export async function GET(request: Request) {
   const cookieHeader = request.headers.get("cookie") || "";
   const token = parseTokenCookie(cookieHeader);
@@ -35,7 +39,10 @@ export async function GET(request: Request) {
       user: {
         id: user.id,
         email: user.email,
-        name: [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || user.email,
+        name:
+          [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+          user.username ||
+          user.email,
         avatarUrl: user.photo || "/assets/images/avatar-placeholder.png",
       },
     });

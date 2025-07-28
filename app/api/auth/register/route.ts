@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { prisma } from '@/lib/database';
 
+export const routeConfig = {
+  runtime: "nodejs",
+};
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
