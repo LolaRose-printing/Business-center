@@ -1,23 +1,25 @@
-export interface IImage {
+export interface IAuthor {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+  }
+  
+  export interface IImage {
     id: string;
     title: string;
-    publicId: string;
     transformationType: string;
+    publicId: string;
+    secureURL: string;
     width: number | null;
     height: number | null;
     config: any;
-    secureURL: string;
-    transformationURL: string | null;
+    transformationUrl: string | null;
     aspectRatio?: string;
-    prompt?: string;
     color?: string;
+    prompt?: string;
     createdAt: Date;
     updatedAt: Date;
-    author?: {
-      id: string;
-      firstName?: string;
-      lastName?: string;
-      email?: string;
-    } | null;
+    author?: IAuthor | null;
   }
   
