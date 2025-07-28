@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database"; // shared Prisma client
 import { verifyPassword, createToken, createTokenCookie } from "@/lib/auth";
 
-export const routeConfig = {
+export const config = {
   runtime: "edge",
 };
 
