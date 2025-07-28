@@ -1,7 +1,11 @@
 import { Collection } from "@/components/shared/Collection";
 import { externalNavLinks } from "@/constants";
-import { getAllImages } from "@/lib/actions/image.actions";
+import { getAllImages } from "@/lib/actions/image.actions"; // ✅ Make sure this is correct
 import Image from "next/image";
+
+interface SearchParamProps {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
 const Home = async ({ searchParams }: SearchParamProps) => {
   const page = Number(searchParams?.page) || 1;
@@ -45,7 +49,7 @@ const Home = async ({ searchParams }: SearchParamProps) => {
         <Collection
           hasSearch={true}
           images={images?.data ?? []}          // ✅ fallback to empty array
-          totalPages={images?.totalPage ?? 1}  // ✅ fallback to 1
+          totalPages={images?.totalPages ?? 1}  // ✅ make sure this is totalPages not totalPage!
           page={page}
         />
       </section>
