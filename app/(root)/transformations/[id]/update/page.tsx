@@ -23,19 +23,18 @@ async function getCurrentUserId() {
 
 const Page = async ({ params: { id } }: SearchParamProps) => {
   const userId = await getCurrentUserId();
-
   if (!userId) redirect("/sign-in");
 
   const user = await getUserById(userId);
   const image = await getImageById(id);
 
-  if (!image) {
-    redirect("/404");
-  }
+  if (!image) redirect("/404");
 
-  // Correctly assign transformation object
-  const transformation =
-    transformationTypes[image.transformationType as keyof typeof transformationTypes];
+  const transformation = transformationTypes[image.transformationType as keyof typeof transformationTypes];
+
+  // Safely cast or fallback your config here:
+  // if config is possibly undefined/null or incompatible, fallback to empty object or null
+  const config = (image.config ?? null) as typeof transformation;
 
   return (
     <>
@@ -44,10 +43,10 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
       <section className="mt-10">
         <TransformationForm
           action="Update"
-          userId={user.id} // Adjust if your user model uses _id instead of id
+          userId={user.id} // or user._id based on your user model
           type={image.transformationType as keyof typeof transformationTypes}
           creditBalance={user.creditBalance}
-          config={image.config}
+          config={config}   // <- cast here
           data={image}
         />
       </section>
