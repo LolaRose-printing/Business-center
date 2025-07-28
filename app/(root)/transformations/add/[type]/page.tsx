@@ -8,7 +8,6 @@ import { verifyToken } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
-// Define the valid keys from transformationTypes
 type TransformationTypeKey = keyof typeof transformationTypes;
 
 async function getCurrentUserId() {
@@ -43,7 +42,6 @@ const AddTransformationTypePage = async ({
   if (!userId) redirect('/sign-in');
 
   const transformation = transformationTypes[type];
-  // Optionally, fetch full user data if needed
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
   return (
@@ -56,7 +54,7 @@ const AddTransformationTypePage = async ({
           userId={userId}
           type={transformation.type as TransformationTypeKey}
           creditBalance={user?.creditBalance ?? 0}
-          config={transformation.config}  {/* Added this line */}
+          config={transformation.config}
         />
       </section>
     </>
