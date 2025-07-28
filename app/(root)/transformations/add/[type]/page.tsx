@@ -34,8 +34,11 @@ async function getCurrentUserId() {
   }
 }
 
-// Now type 'type' param as TransformationTypeKey (union of allowed strings)
-const AddTransformationTypePage = async ({ params: { type } }: { params: { type: TransformationTypeKey } }) => {
+const AddTransformationTypePage = async ({
+  params: { type },
+}: {
+  params: { type: TransformationTypeKey };
+}) => {
   const userId = await getCurrentUserId();
   if (!userId) redirect('/sign-in');
 
@@ -53,6 +56,7 @@ const AddTransformationTypePage = async ({ params: { type } }: { params: { type:
           userId={userId}
           type={transformation.type as TransformationTypeKey}
           creditBalance={user?.creditBalance ?? 0}
+          config={transformation.config}  {/* Added this line */}
         />
       </section>
     </>
