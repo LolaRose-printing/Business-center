@@ -12,6 +12,23 @@ type SearchParamProps = {
   };
 };
 
+// --- Example: Define Transformations type ---
+// Replace or adjust based on your actual Transformations shape
+type Transformations =
+  | { restore: boolean }
+  | { removeBackground: boolean }
+  | { someOtherOption?: string } // add more variants as needed
+  | null;
+
+// --- Example: Define Image type ---
+// Adjust fields as per your real Image data structure
+interface Image {
+  id: string;
+  transformationType: string; // should match keys in transformationTypes
+  config: Transformations | null;
+  // ... other image fields
+}
+
 async function getCurrentUserId() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
     credentials: "include",
@@ -26,15 +43,17 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
   if (!userId) redirect("/sign-in");
 
   const user = await getUserById(userId);
-  const image = await getImageById(id);
+  const image = (await getImageById(id)) as Image | null;
 
   if (!image) redirect("/404");
 
-  const transformation = transformationTypes[image.transformationType as keyof typeof transformationTypes];
+  // Get transformation metadata from constant
+  const transformation = transformationTypes[
+    image.transformationType as keyof typeof transformationTypes
+  ];
 
-  // Safely cast or fallback your config here:
-  // if config is possibly undefined/null or incompatible, fallback to empty object or null
-  const config = (image.config ?? null) as typeof transformation;
+  // Cast the user config from image.config properly
+  const config = image.config ?? null; // type: Transformations | null
 
   return (
     <>
@@ -43,10 +62,10 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
       <section className="mt-10">
         <TransformationForm
           action="Update"
-          userId={user.id} // or user._id based on your user model
+          userId={user.id} // or user._id depending on your user model
           type={image.transformationType as keyof typeof transformationTypes}
           creditBalance={user.creditBalance}
-          config={config}   // <- cast here
+          config={config}   // pass user config here correctly
           data={image}
         />
       </section>
