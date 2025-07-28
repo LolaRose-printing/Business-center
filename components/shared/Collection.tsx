@@ -12,11 +12,10 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { transformationTypes } from "@/constants";
-import { IImage } from "@/lib/database/models/image.model";
+import { IImage } from "@/lib/actions/image.actions"; // ✅ use the plain one!
 import { formUrlQuery } from "@/lib/utils";
 
 import { Button } from "../ui/button";
-
 import { Search } from "./Search";
 
 interface CollectionProps {
@@ -38,7 +37,6 @@ export const Collection = ({
   const onPageChange = (action: "next" | "prev") => {
     const pageValue = action === "next" ? page + 1 : page - 1;
 
-    // Generate new URL with updated page query parameter
     const newUrl = formUrlQuery({
       searchParams: searchParams.toString(),
       key: "page",
@@ -58,7 +56,7 @@ export const Collection = ({
       {images.length > 0 ? (
         <ul className="collection-list">
           {images.map((image) => (
-            <Card image={image} key={image._id} />
+            <Card image={image} key={image.id} /> {/* ✅ `id` not `_id` */}
           ))}
         </ul>
       ) : (
@@ -97,16 +95,17 @@ export const Collection = ({
 };
 
 const Card = ({ image }: { image: IImage }) => {
-  const transformationTypeKey = image.transformationType as keyof typeof transformationTypes;
+  const transformationTypeKey =
+    image.transformationType as keyof typeof transformationTypes;
 
   return (
     <li>
-      <Link href={`/transformations/${image._id}`} className="collection-card">
+      <Link href={`/transformations/${image.id}`} className="collection-card"> {/* ✅ `id` not `_id` */}
         <CldImage
           src={image.publicId}
           alt={image.title}
-          width={image.width}
-          height={image.height}
+          width={image.width || 500}
+          height={image.height || 500}
           {...image.config}
           loading="lazy"
           className="h-52 w-full rounded-[10px] object-cover"
