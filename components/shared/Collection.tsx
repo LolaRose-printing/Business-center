@@ -46,7 +46,7 @@ export const Collection = ({
     });
 
     router.push(newUrl, { scroll: false });
-  };
+  }; // ✅ THIS is valid — closes `onPageChange` block
 
   return (
     <>
@@ -58,7 +58,7 @@ export const Collection = ({
       {images.length > 0 ? (
         <ul className="collection-list">
           {images.map((image) => (
-            <Card image={image} key={image.id} /> {/* ✅ Correct: `id` not `_id` */}
+            <Card image={image} key={image.id} />
           ))}
         </ul>
       ) : (
