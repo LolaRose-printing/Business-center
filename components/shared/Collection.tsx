@@ -12,7 +12,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { transformationTypes } from "@/constants";
-import { IImage } from "@/lib/database/models/image.model";
+import { IImage } from "@/lib/actions/image.actions";
 import { formUrlQuery } from "@/lib/utils";
 
 import { Button } from "../ui/button";
@@ -46,7 +46,7 @@ export const Collection = ({
     });
 
     router.push(newUrl, { scroll: false });
-  }; // ✅ THIS is valid — closes `onPageChange` block
+  };
 
   return (
     <>
