@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // use singleton prisma instance
 import { parseTokenCookie, verifyToken } from "@/lib/auth";
 
-export const routeConfig = {
-  runtime: "nodejs",
-};
+export const runtime = "nodejs";
+
 
 export async function POST(request: Request) {
   const cookieHeader = request.headers.get("cookie") || "";

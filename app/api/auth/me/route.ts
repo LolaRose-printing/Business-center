@@ -4,9 +4,8 @@ import { parseTokenCookie, verifyToken } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
-export const routeConfig = {
-  runtime: "nodejs",
-};
+export const runtime = "nodejs";
+
 
 export async function GET(request: Request) {
   const cookieHeader = request.headers.get("cookie") || "";

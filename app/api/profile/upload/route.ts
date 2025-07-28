@@ -4,9 +4,7 @@ import { parseTokenCookie, verifyToken } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
-export const routeConfig = {
-  runtime: "nodejs",
-};
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
