@@ -1,36 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Image as PrismaImage, User } from "@prisma/client";
 import { handleError } from "../utils";
 import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
-// Define IImage type matching Prisma image model + optional author data
-export type IAuthor = {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  email: string;
-};
-
-export type IImage = {
-  id: string;
-  title: string;
-  transformationType: string;
-  publicId: string;
-  secureURL: string;
-  width: number | null;
-  height: number | null;
-  config: any;
-  transformationUrl: string | null;
-  aspectRatio?: string;
-  color?: string;
-  prompt?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  author?: IAuthor | null;
+// ✅ Use Prisma types only!
+export type IImage = PrismaImage & {
+  author?: Pick<User, "id" | "firstName" | "lastName" | "email"> | null;
 };
 
 // ADD IMAGE
@@ -165,7 +144,6 @@ export async function updateImage({
 export async function deleteImage(imageId: string): Promise<boolean> {
   try {
     await prisma.image.delete({ where: { id: imageId } });
-    // Don't redirect here; let caller handle routing
     return true;
   } catch (error) {
     handleError(error);
