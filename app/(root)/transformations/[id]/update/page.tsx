@@ -6,6 +6,12 @@ import { transformationTypes } from "@/constants";
 import { getUserById } from "@/lib/actions/user.actions";
 import { getImageById } from "@/lib/actions/image.actions";
 
+type SearchParamProps = {
+  params: {
+    id: string;
+  };
+};
+
 async function getCurrentUserId() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
     credentials: "include",
@@ -23,8 +29,14 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
   const user = await getUserById(userId);
   const image = await getImageById(id);
 
+  // Handle image null case - redirect or show 404
+  if (!image) {
+    redirect("/404");
+  }
+
+  // Now safe to access image properties
   const transformation =
-    transformationTypes[image.transformationType as TransformationTypeKey];
+    transformationTypes[image.transformationType as keyof typeof transformationTypes];
 
   return (
     <>
@@ -33,8 +45,8 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
       <section className="mt-10">
         <TransformationForm
           action="Update"
-          userId={user._id}
-          type={image.transformationType as TransformationTypeKey}
+          userId={user.id} // assuming user.id, adjust if your user model uses _id
+          type={image.transformationType as keyof typeof transformationTypes}
           creditBalance={user.creditBalance}
           config={image.config}
           data={image}
