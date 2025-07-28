@@ -29,17 +29,11 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
   const user = await getUserById(userId);
   const image = await getImageById(id);
 
-  // Handle image null case - redirect or show 404
   if (!image) {
     redirect("/404");
   }
 
-  // Normalize transformationURL to never be undefined
-  const normalizedImage = {
-    ...image,
-    transformationURL: image.transformationURL ?? null,
-  };
-
+  // Correctly assign transformation object
   const transformation =
     transformationTypes[image.transformationType as keyof typeof transformationTypes];
 
@@ -50,11 +44,11 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
       <section className="mt-10">
         <TransformationForm
           action="Update"
-          userId={user.id} // adjust if your user model uses _id instead of id
+          userId={user.id} // Adjust if your user model uses _id instead of id
           type={image.transformationType as keyof typeof transformationTypes}
           creditBalance={user.creditBalance}
           config={image.config}
-          data={normalizedImage}  {/* Use normalized image here */}
+          data={image}
         />
       </section>
     </>
