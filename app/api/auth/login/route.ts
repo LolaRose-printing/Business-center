@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database"; // shared Prisma client
 import { verifyPassword, createToken, createTokenCookie } from "@/lib/auth";
 
-export const config = {
-  runtime: "edge",
-};
+// Replace `export const config` with this for Next.js 14+
+export const runtime = "edge";
 
 export async function POST(request: Request) {
   try {
