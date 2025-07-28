@@ -8,6 +8,9 @@ import { verifyToken } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
+// Define the valid keys from transformationTypes
+type TransformationTypeKey = keyof typeof transformationTypes;
+
 async function getCurrentUserId() {
   const cookieStore = cookies();
   const token = cookieStore.get('token')?.value;
@@ -31,7 +34,8 @@ async function getCurrentUserId() {
   }
 }
 
-const AddTransformationTypePage = async ({ params: { type } }: { params: { type: string } }) => {
+// Now type 'type' param as TransformationTypeKey (union of allowed strings)
+const AddTransformationTypePage = async ({ params: { type } }: { params: { type: TransformationTypeKey } }) => {
   const userId = await getCurrentUserId();
   if (!userId) redirect('/sign-in');
 
@@ -47,7 +51,7 @@ const AddTransformationTypePage = async ({ params: { type } }: { params: { type:
         <TransformationForm
           action="Add"
           userId={userId}
-          type={transformation.type as keyof typeof transformationTypes}
+          type={transformation.type as TransformationTypeKey}
           creditBalance={user?.creditBalance ?? 0}
         />
       </section>
