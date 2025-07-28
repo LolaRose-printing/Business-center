@@ -30,6 +30,11 @@ export const navLinks = [
     icon: "/assets/icons/camera.svg",
   },
   {
+    label: "Shop",
+    url: "https://rosehub.lolaprint.us/shop",
+    icon: "/assets/icons/bag.svg",
+  },
+  {
     label: "Profile",
     route: "/profile",
     icon: "/assets/icons/profile.svg",
@@ -44,7 +49,7 @@ export const navLinks = [
 export const externalNavLinks = [
   {
     label: "Online printing",
-    url: "https://lolaprint.us",
+    url: "https://lolaprint.us/service",
     icon: "/assets/images/1.png",
   },
   {

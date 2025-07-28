@@ -4,10 +4,11 @@ import { parseTokenCookie, verifyToken } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
-export const config = {
-  api: {
-    bodyParser: false, // to handle multipart/form-data manually
-  },
+// New config export per Next.js 14:
+export const routeConfig = {
+  runtime: "edge",  // or "nodejs" if you need Node APIs (fs etc)
+  // Next.js 14 currently does not support disabling bodyParser like before,
+  // So you'll handle multipart/form-data manually as you do.
 };
 
 export async function POST(request: Request) {
@@ -32,26 +33,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
 
-  // You need to handle the actual upload to a storage (local, cloud like AWS S3, Cloudinary, etc)
-  // For demo, let's assume you save locally and generate a URL `/uploads/{filename}`
-
-  // Example: generate a unique filename
+  // Generate unique filename
   const fileName = `${userId}-${Date.now()}-${file.name}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // For local filesystem, you can use 'fs' but Next.js API routes don't allow it directly.
-  // You may want to use an external service like Cloudinary here or custom upload handler.
+  // Your upload logic here (e.g., upload to cloud or save locally)
 
-  // Pseudo code (replace with your actual storage logic):
-  /*
-  await fs.promises.writeFile(`./public/uploads/${fileName}`, buffer);
-  const photoUrl = `/uploads/${fileName}`;
-  */
-
-  // For now, let's pretend upload succeeded and photoUrl is this:
   const photoUrl = `/uploads/${fileName}`;
 
-  // Update user in DB
   await prisma.user.update({
     where: { id: userId },
     data: { photo: photoUrl },
