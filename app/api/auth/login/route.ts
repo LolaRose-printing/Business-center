@@ -3,7 +3,7 @@ import { prisma } from "@/lib/database"; // shared Prisma client
 import { verifyPassword, createToken, createTokenCookie } from "@/lib/auth";
 
 // Replace `export const config` with this for Next.js 14+
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
