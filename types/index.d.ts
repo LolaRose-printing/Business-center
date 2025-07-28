@@ -151,7 +151,7 @@ declare type IImage = {
   aspectRatio?: string;
   prompt?: string;
   color?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  author?: any; // only if you populate it
+  createdAt: Date;
+  updatedAt: Date;
+  author?: any;
 };

@@ -7,6 +7,32 @@ import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
+// Define IImage type matching Prisma image model + optional author data
+export type IAuthor = {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+};
+
+export type IImage = {
+  id: string;
+  title: string;
+  transformationType: string;
+  publicId: string;
+  secureURL: string;
+  width: number | null;
+  height: number | null;
+  config: any;
+  transformationUrl: string | null;
+  aspectRatio?: string;
+  color?: string;
+  prompt?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  author?: IAuthor | null;
+};
+
 // ADD IMAGE
 export async function addImage({
   image,
@@ -18,17 +44,17 @@ export async function addImage({
     transformationType: string;
     publicId: string;
     secureURL: string;
-    width?: number;
-    height?: number;
+    width?: number | null;
+    height?: number | null;
     config?: any;
-    transformationUrl?: string;
-    aspectRatio?: string;
-    color?: string;
-    prompt?: string;
+    transformationUrl?: string | null;
+    aspectRatio?: string | null;
+    color?: string | null;
+    prompt?: string | null;
   };
-  userId: string; // Use string for Prisma ID
+  userId: string;
   path: string;
-}) {
+}): Promise<IImage | null> {
   try {
     const author = await prisma.user.findUnique({ where: { id: userId } });
     if (!author) throw new Error("User not found");
@@ -39,14 +65,24 @@ export async function addImage({
         transformationType: image.transformationType,
         publicId: image.publicId,
         secureURL: image.secureURL,
-        width: image.width,
-        height: image.height,
-        config: image.config,
-        transformationUrl: image.transformationUrl,
-        aspectRatio: image.aspectRatio,
-        color: image.color,
-        prompt: image.prompt,
+        width: image.width ?? null,
+        height: image.height ?? null,
+        config: image.config ?? {},
+        transformationUrl: image.transformationUrl ?? null,
+        aspectRatio: image.aspectRatio ?? null,
+        color: image.color ?? null,
+        prompt: image.prompt ?? null,
         authorId: userId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -54,7 +90,7 @@ export async function addImage({
     return newImage;
   } catch (error) {
     handleError(error);
-    return null; // or throw error if you prefer
+    return null;
   }
 }
 
@@ -65,30 +101,30 @@ export async function updateImage({
   path,
 }: {
   image: {
-    id: string; // Prisma uses string IDs
+    id: string;
     title: string;
     transformationType: string;
     publicId: string;
     secureURL: string;
-    width?: number;
-    height?: number;
+    width?: number | null;
+    height?: number | null;
     config?: any;
-    transformationUrl?: string;
-    aspectRatio?: string;
-    color?: string;
-    prompt?: string;
+    transformationUrl?: string | null;
+    aspectRatio?: string | null;
+    color?: string | null;
+    prompt?: string | null;
   };
   userId: string;
   path: string;
-}) {
+}): Promise<IImage | null> {
   try {
     const imageToUpdate = await prisma.image.findUnique({
       where: { id: image.id },
     });
 
-    if (!imageToUpdate || imageToUpdate.authorId !== userId) {
-      throw new Error("Unauthorized or image not found");
-    }
+    if (!imageToUpdate) throw new Error("Image not found");
+    if (imageToUpdate.authorId !== userId)
+      throw new Error("Unauthorized to update this image");
 
     const updatedImage = await prisma.image.update({
       where: { id: image.id },
@@ -97,13 +133,23 @@ export async function updateImage({
         transformationType: image.transformationType,
         publicId: image.publicId,
         secureURL: image.secureURL,
-        width: image.width,
-        height: image.height,
-        config: image.config,
-        transformationUrl: image.transformationUrl,
-        aspectRatio: image.aspectRatio,
-        color: image.color,
-        prompt: image.prompt,
+        width: image.width ?? null,
+        height: image.height ?? null,
+        config: image.config ?? {},
+        transformationUrl: image.transformationUrl ?? null,
+        aspectRatio: image.aspectRatio ?? null,
+        color: image.color ?? null,
+        prompt: image.prompt ?? null,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -116,17 +162,19 @@ export async function updateImage({
 }
 
 // DELETE IMAGE
-export async function deleteImage(imageId: string) {
+export async function deleteImage(imageId: string): Promise<boolean> {
   try {
     await prisma.image.delete({ where: { id: imageId } });
-    redirect("/");
+    // Don't redirect here; let caller handle routing
+    return true;
   } catch (error) {
     handleError(error);
+    return false;
   }
 }
 
 // GET IMAGE BY ID
-export async function getImageById(imageId: string) {
+export async function getImageById(imageId: string): Promise<IImage | null> {
   try {
     const image = await prisma.image.findUnique({
       where: { id: imageId },
@@ -159,7 +207,11 @@ export async function getAllImages({
   limit?: number;
   page: number;
   searchQuery?: string;
-}) {
+}): Promise<{
+  data: IImage[];
+  totalPages: number;
+  savedImages: number;
+} | null> {
   try {
     const skipAmount = (page - 1) * limit;
 
@@ -195,7 +247,7 @@ export async function getAllImages({
 
     return {
       data: images,
-      totalPages: Math.ceil(totalImages / limit), // fixed to totalPages plural
+      totalPages: Math.ceil(totalImages / limit),
       savedImages,
     };
   } catch (error) {
@@ -204,7 +256,7 @@ export async function getAllImages({
   }
 }
 
-// GET IMAGES BY USER
+// GET IMAGES BY USER WITH PAGINATION
 export async function getUserImages({
   limit = 9,
   page = 1,
@@ -213,7 +265,10 @@ export async function getUserImages({
   limit?: number;
   page: number;
   userId: string;
-}) {
+}): Promise<{
+  data: IImage[];
+  totalPages: number;
+} | null> {
   try {
     const skipAmount = (page - 1) * limit;
 
