@@ -12,21 +12,17 @@ type SearchParamProps = {
   };
 };
 
-// --- Example: Define Transformations type ---
-// Replace or adjust based on your actual Transformations shape
+// ✅ MATCH the actual possible configs:
 type Transformations =
   | { restore: boolean }
   | { removeBackground: boolean }
-  | { someOtherOption?: string } // add more variants as needed
-  | null;
+  | { someOtherOption?: string };
 
-// --- Example: Define Image type ---
-// Adjust fields as per your real Image data structure
+// If your image type:
 interface Image {
   id: string;
-  transformationType: string; // should match keys in transformationTypes
+  transformationType: string;
   config: Transformations | null;
-  // ... other image fields
 }
 
 async function getCurrentUserId() {
@@ -47,13 +43,12 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
 
   if (!image) redirect("/404");
 
-  // Get transformation metadata from constant
   const transformation = transformationTypes[
     image.transformationType as keyof typeof transformationTypes
   ];
 
-  // Cast the user config from image.config properly
-  const config = image.config ?? null; // type: Transformations | null
+  // ✅ config is now the correct union type:
+  const config: Transformations | null = image.config ?? null;
 
   return (
     <>
@@ -62,10 +57,10 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
       <section className="mt-10">
         <TransformationForm
           action="Update"
-          userId={user.id} // or user._id depending on your user model
+          userId={user.id}
           type={image.transformationType as keyof typeof transformationTypes}
           creditBalance={user.creditBalance}
-          config={config}   // pass user config here correctly
+          config={config} // ✅ Now matches your props
           data={image}
         />
       </section>
