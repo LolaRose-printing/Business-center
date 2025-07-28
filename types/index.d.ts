@@ -136,3 +136,22 @@ declare type TransformedImageProps = {
   hasDownload?: boolean;
   setIsTransforming?: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
+// ====== IMAGE RETURN TYPE
+declare type IImage = {
+  id: string;
+  title: string;
+  publicId: string;
+  transformationType: string;
+  width: number | null;
+  height: number | null;
+  config: any;
+  secureURL: string;
+  transformationURL: string | null;
+  aspectRatio?: string;
+  prompt?: string;
+  color?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  author?: any; // only if you populate it
+};
