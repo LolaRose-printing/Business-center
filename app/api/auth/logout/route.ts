@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { serialize } from "cookie";
 
-export const routeConfig = {
-  runtime: "edge",
-};
+export const runtime = "edge"; // <-- use this instead of routeConfig
 
 export async function POST() {
   const expiredCookie = serialize("token", "", {
