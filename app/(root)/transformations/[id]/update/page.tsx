@@ -12,13 +12,12 @@ type SearchParamProps = {
   };
 };
 
-// ✅ MATCH the actual possible configs:
+// ✅ FINAL: This MUST match exactly.
 type Transformations =
   | { restore: boolean }
   | { removeBackground: boolean }
-  | { someOtherOption?: string };
+  | { someOtherOption?: string };  // Include your optional shape!
 
-// If your image type:
 interface Image {
   id: string;
   transformationType: string;
@@ -47,7 +46,6 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
     image.transformationType as keyof typeof transformationTypes
   ];
 
-  // ✅ config is now the correct union type:
   const config: Transformations | null = image.config ?? null;
 
   return (
@@ -60,7 +58,7 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
           userId={user.id}
           type={image.transformationType as keyof typeof transformationTypes}
           creditBalance={user.creditBalance}
-          config={config} // ✅ Now matches your props
+          config={config}
           data={image}
         />
       </section>
