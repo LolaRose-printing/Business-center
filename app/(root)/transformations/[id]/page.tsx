@@ -9,6 +9,12 @@ import { getImageSize } from "@/lib/utils";
 import { DeleteConfirmation } from "@/components/shared/DeleteConfirmation";
 import { redirect } from "next/navigation";
 
+type SearchParamProps = {
+  params: {
+    id: string;
+  };
+};
+
 async function getCurrentUserId() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
     credentials: "include",
@@ -25,6 +31,11 @@ const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
 
   const image = await getImageById(id);
 
+  if (!image) {
+    // Image not found, redirect to 404 or homepage
+    redirect("/404"); // or redirect("/")
+  }
+
   return (
     <>
       <Header title={image.title} />
@@ -37,7 +48,7 @@ const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
           <p className=" capitalize text-purple-400">{image.transformationType}</p>
         </div>
 
-        {/* Conditionally render prompt, color, aspectRatio ... */}
+        {/* Conditionally render prompt, color, aspectRatio if needed */}
       </section>
 
       <section className="mt-10 border-t border-dark-400/15">
@@ -49,7 +60,7 @@ const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
               width={getImageSize(image.transformationType, image, "width")}
               height={getImageSize(image.transformationType, image, "height")}
               src={image.secureURL}
-              alt="image"
+              alt={image.title}
               className="transformation-original_image"
             />
           </div>
@@ -64,13 +75,13 @@ const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
           />
         </div>
 
-        {userId === image.author._id /* or your backend user ID field */ && (
+        {userId === image.author?.id && (
           <div className="mt-4 space-y-4">
             <Button asChild type="button" className="submit-button capitalize">
-              <Link href={`/transformations/${image._id}/update`}>Update Image</Link>
+              <Link href={`/transformations/${image.id}/update`}>Update Image</Link>
             </Button>
 
-            <DeleteConfirmation imageId={image._id} />
+            <DeleteConfirmation imageId={image.id} />
           </div>
         )}
       </section>
