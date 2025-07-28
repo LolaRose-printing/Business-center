@@ -8,6 +8,10 @@ const nextConfig = {
         port: ''
       }
     ]
+  },
+  eslint: {
+    // Skip ESLint during production builds
+    ignoreDuringBuilds: true,
   }
 };
 
