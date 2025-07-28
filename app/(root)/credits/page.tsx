@@ -11,7 +11,7 @@ import Checkout from "@/components/shared/Checkout";
 import { cookies } from "next/headers";
 import { parseTokenCookie, verifyToken } from "@/lib/auth";
 
-// Proper server-side user ID retrieval from cookie and token
+// ✅ Proper helper
 async function getCurrentUserId() {
   const cookieStore = cookies();
   const token = parseTokenCookie(cookieStore.toString());
@@ -20,12 +20,13 @@ async function getCurrentUserId() {
   try {
     const decoded = verifyToken(token) as { userId: string };
     return decoded.userId;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
 
-const Credits = async () => {
+// ✅ Correct export
+export default async function Credits() {
   const userId = await getCurrentUserId();
 
   if (!userId) redirect("/sign-in");
@@ -79,7 +80,7 @@ const Credits = async () => {
                     plan={plan.name}
                     amount={plan.price}
                     credits={plan.credits}
-                    buyerId={user.id}  {/* <-- Changed here from user._id to user.id */}
+                    buyerId={user.id}
                   />
                 )
               )}
@@ -89,6 +90,4 @@ const Credits = async () => {
       </section>
     </>
   );
-};
-
-export default Credits;
+}
