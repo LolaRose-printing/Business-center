@@ -12,10 +12,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { transformationTypes } from "@/constants";
-import { IImage } from "@/lib/actions/image.actions"; // ✅ use the plain one!
+import { IImage } from "@/lib/database/models/image.model";
 import { formUrlQuery } from "@/lib/utils";
 
 import { Button } from "../ui/button";
+
 import { Search } from "./Search";
 
 interface CollectionProps {
@@ -37,6 +38,7 @@ export const Collection = ({
   const onPageChange = (action: "next" | "prev") => {
     const pageValue = action === "next" ? page + 1 : page - 1;
 
+    // Generate new URL with updated page query parameter
     const newUrl = formUrlQuery({
       searchParams: searchParams.toString(),
       key: "page",
@@ -56,7 +58,7 @@ export const Collection = ({
       {images.length > 0 ? (
         <ul className="collection-list">
           {images.map((image) => (
-            <Card image={image} key={image.id} /> {/* ✅ `id` not `_id` */}
+            <Card image={image} key={image.id} /> {/* ✅ Correct: `id` not `_id` */}
           ))}
         </ul>
       ) : (
@@ -100,7 +102,7 @@ const Card = ({ image }: { image: IImage }) => {
 
   return (
     <li>
-      <Link href={`/transformations/${image.id}`} className="collection-card"> {/* ✅ `id` not `_id` */}
+      <Link href={`/transformations/${image.id}`} className="collection-card">
         <CldImage
           src={image.publicId}
           alt={image.title}
@@ -116,7 +118,10 @@ const Card = ({ image }: { image: IImage }) => {
             {image.title}
           </p>
           <Image
-            src={`/assets/icons/${transformationTypes[transformationTypeKey]?.icon || "default-icon.svg"}`}
+            src={`/assets/icons/${
+              transformationTypes[transformationTypeKey]?.icon ||
+              "default-icon.svg"
+            }`}
             alt={image.title}
             width={24}
             height={24}
