@@ -7,9 +7,10 @@ import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
-// ✅ Use Prisma types only!
+// Use Prisma types only, extended with author info
 export type IImage = PrismaImage & {
   author?: Pick<User, "id" | "firstName" | "lastName" | "email"> | null;
+  transformationURL?: string | null;  // Note capital "URL"
 };
 
 // ADD IMAGE
@@ -26,7 +27,7 @@ export async function addImage({
     width?: number | null;
     height?: number | null;
     config?: any;
-    transformationUrl?: string | null;
+    transformationURL?: string | null; // capital URL
     aspectRatio?: string | null;
     color?: string | null;
     prompt?: string | null;
@@ -47,7 +48,7 @@ export async function addImage({
         width: image.width ?? null,
         height: image.height ?? null,
         config: image.config ?? {},
-        transformationUrl: image.transformationUrl ?? null,
+        transformationURL: image.transformationURL ?? null,
         aspectRatio: image.aspectRatio ?? null,
         color: image.color ?? null,
         prompt: image.prompt ?? null,
@@ -88,7 +89,7 @@ export async function updateImage({
     width?: number | null;
     height?: number | null;
     config?: any;
-    transformationUrl?: string | null;
+    transformationURL?: string | null; // capital URL
     aspectRatio?: string | null;
     color?: string | null;
     prompt?: string | null;
@@ -115,7 +116,7 @@ export async function updateImage({
         width: image.width ?? null,
         height: image.height ?? null,
         config: image.config ?? {},
-        transformationUrl: image.transformationUrl ?? null,
+        transformationURL: image.transformationURL ?? null,
         aspectRatio: image.aspectRatio ?? null,
         color: image.color ?? null,
         prompt: image.prompt ?? null,
