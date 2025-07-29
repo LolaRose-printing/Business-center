@@ -1,5 +1,5 @@
 // Navigation link type for internal routes or external URLs
-interface NavLink {
+export interface NavLink {
   label: string;
   route?: string; // Internal route
   url?: string;   // External URL
@@ -80,12 +80,12 @@ export const externalNavLinks: NavLink[] = [
 ];
 
 // Plan type and data
-interface PlanInclusion {
+export interface PlanInclusion {
   label: string;
   isIncluded: boolean;
 }
 
-interface Plan {
+export interface Plan {
   _id: number;
   name: string;
   icon: string;
@@ -136,20 +136,63 @@ export const plans: Plan[] = [
   },
 ];
 
-// Type helper for transformation keys (import or define transformationTypes somewhere)
-type TransformationTypeKey = keyof typeof transformationTypes;
+// Transformation types - important to export this for type safety and access across the app
+export const transformationTypes = {
+  restore: {
+    type: "restore",
+    title: "Restore Image",
+    subTitle: "Refine images by removing noise and imperfections",
+    config: { restore: true },
+    icon: "/assets/icons/image.svg",
+  },
+  removeBackground: {
+    type: "removeBackground",
+    title: "Background Remove",
+    subTitle: "Removes the background of the image using AI",
+    config: { removeBackground: true },
+    icon: "/assets/icons/camera.svg",
+  },
+  fill: {
+    type: "fill",
+    title: "Generative Fill",
+    subTitle: "Enhance an image's dimensions using AI outpainting",
+    config: { fillBackground: true },
+    icon: "/assets/icons/stars.svg",
+  },
+  remove: {
+    type: "remove",
+    title: "Object Remove",
+    subTitle: "Identify and eliminate objects from images",
+    config: {
+      remove: { prompt: "", removeShadow: true, multiple: true },
+    },
+    icon: "/assets/icons/scan.svg",
+  },
+  recolor: {
+    type: "recolor",
+    title: "Object Recolor",
+    subTitle: "Identify and recolor objects from the image",
+    config: {
+      recolor: { prompt: "", to: "", multiple: true },
+    },
+    icon: "/assets/icons/filter.svg",
+  },
+} as const;
 
-// Form props interface
+// Type helper for transformation keys
+export type TransformationTypeKey = keyof typeof transformationTypes;
+
+// Interface for form props
 export interface TransformationFormProps {
   action: string;
   data?: any | null;
   userId: string;
   type: TransformationTypeKey;
   creditBalance: number;
-  config: Transformations | null;
+  config: any | null;  // Update 'any' to your Transformations type if you have it
 }
 
-// Aspect ratio options with explicit type
+// Aspect ratio options
 export const aspectRatioOptions = {
   "1:1": {
     aspectRatio: "1:1",
