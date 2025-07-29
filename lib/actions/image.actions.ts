@@ -48,7 +48,7 @@ export async function addImage({
         width: image.width ?? null,
         height: image.height ?? null,
         config: image.config ?? {},
-        transformationUrl: image.transformationURL ?? null,
+        transformationUrl: image.transformationUrl ?? null,  // use lowercase 'Url'
         aspectRatio: image.aspectRatio ?? null,
         color: image.color ?? null,
         prompt: image.prompt ?? null,
@@ -116,7 +116,7 @@ export async function updateImage({
         width: image.width ?? null,
         height: image.height ?? null,
         config: image.config ?? {},
-        transformationUrl: image.transformationUrl ?? null,
+        transformationUrl: image.transformationUrl ?? null,  // use lowercase 'Url'
         aspectRatio: image.aspectRatio ?? null,
         color: image.color ?? null,
         prompt: image.prompt ?? null,
