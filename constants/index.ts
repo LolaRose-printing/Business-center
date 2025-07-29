@@ -1,4 +1,13 @@
-export const navLinks = [
+// Navigation link type for internal routes or external URLs
+interface NavLink {
+  label: string;
+  route?: string; // Internal route
+  url?: string;   // External URL
+  icon: string;
+}
+
+// Nav links used in sidebar/menu
+export const navLinks: NavLink[] = [
   {
     label: "Home",
     route: "/",
@@ -46,7 +55,8 @@ export const navLinks = [
   },
 ];
 
-export const externalNavLinks = [
+// External navigation links (completely external URLs)
+export const externalNavLinks: NavLink[] = [
   {
     label: "Online printing",
     url: "https://lolaprint.us/service",
@@ -69,7 +79,22 @@ export const externalNavLinks = [
   },
 ];
 
-export const plans = [
+// Plan type and data
+interface PlanInclusion {
+  label: string;
+  isIncluded: boolean;
+}
+
+interface Plan {
+  _id: number;
+  name: string;
+  icon: string;
+  price: number;
+  credits: number;
+  inclusions: PlanInclusion[];
+}
+
+export const plans: Plan[] = [
   {
     _id: 1,
     name: "Free",
@@ -77,22 +102,10 @@ export const plans = [
     price: 0,
     credits: 20,
     inclusions: [
-      {
-        label: "20 Free Credits",
-        isIncluded: true,
-      },
-      {
-        label: "Basic Access to Services",
-        isIncluded: true,
-      },
-      {
-        label: "Priority Customer Support",
-        isIncluded: false,
-      },
-      {
-        label: "Priority Updates",
-        isIncluded: false,
-      },
+      { label: "20 Free Credits", isIncluded: true },
+      { label: "Basic Access to Services", isIncluded: true },
+      { label: "Priority Customer Support", isIncluded: false },
+      { label: "Priority Updates", isIncluded: false },
     ],
   },
   {
@@ -102,22 +115,10 @@ export const plans = [
     price: 40,
     credits: 120,
     inclusions: [
-      {
-        label: "120 Credits",
-        isIncluded: true,
-      },
-      {
-        label: "Full Access to Services",
-        isIncluded: true,
-      },
-      {
-        label: "Priority Customer Support",
-        isIncluded: true,
-      },
-      {
-        label: "Priority Updates",
-        isIncluded: false,
-      },
+      { label: "120 Credits", isIncluded: true },
+      { label: "Full Access to Services", isIncluded: true },
+      { label: "Priority Customer Support", isIncluded: true },
+      { label: "Priority Updates", isIncluded: false },
     ],
   },
   {
@@ -127,68 +128,28 @@ export const plans = [
     price: 199,
     credits: 2000,
     inclusions: [
-      {
-        label: "2000 Credits",
-        isIncluded: true,
-      },
-      {
-        label: "Full Access to Services",
-        isIncluded: true,
-      },
-      {
-        label: "Priority Customer Support",
-        isIncluded: true,
-      },
-      {
-        label: "Priority Updates",
-        isIncluded: true,
-      },
+      { label: "2000 Credits", isIncluded: true },
+      { label: "Full Access to Services", isIncluded: true },
+      { label: "Priority Customer Support", isIncluded: true },
+      { label: "Priority Updates", isIncluded: true },
     ],
   },
 ];
 
-export const transformationTypes = {
-  restore: {
-    type: "restore",
-    title: "Restore Image",
-    subTitle: "Refine images by removing noise and imperfections",
-    config: { restore: true },
-    icon: "image.svg",
-  },
-  removeBackground: {
-    type: "removeBackground",
-    title: "Background Remove",
-    subTitle: "Removes the background of the image using AI",
-    config: { removeBackground: true },
-    icon: "camera.svg",
-  },
-  fill: {
-    type: "fill",
-    title: "Generative Fill",
-    subTitle: "Enhance an image's dimensions using AI outpainting",
-    config: { fillBackground: true },
-    icon: "stars.svg",
-  },
-  remove: {
-    type: "remove",
-    title: "Object Remove",
-    subTitle: "Identify and eliminate objects from images",
-    config: {
-      remove: { prompt: "", removeShadow: true, multiple: true },
-    },
-    icon: "scan.svg",
-  },
-  recolor: {
-    type: "recolor",
-    title: "Object Recolor",
-    subTitle: "Identify and recolor objects from the image",
-    config: {
-      recolor: { prompt: "", to: "", multiple: true },
-    },
-    icon: "filter.svg",
-  },
-};
+// Type helper for transformation keys (import or define transformationTypes somewhere)
+type TransformationTypeKey = keyof typeof transformationTypes;
 
+// Form props interface
+export interface TransformationFormProps {
+  action: string;
+  data?: any | null;
+  userId: string;
+  type: TransformationTypeKey;
+  creditBalance: number;
+  config: Transformations | null;
+}
+
+// Aspect ratio options with explicit type
 export const aspectRatioOptions = {
   "1:1": {
     aspectRatio: "1:1",
@@ -210,6 +171,7 @@ export const aspectRatioOptions = {
   },
 };
 
+// Default form values
 export const defaultValues = {
   title: "",
   aspectRatio: "",
@@ -218,4 +180,5 @@ export const defaultValues = {
   publicId: "",
 };
 
+// Credit fee constant
 export const creditFee = -1;
