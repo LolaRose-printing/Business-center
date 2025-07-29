@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { PrismaClient, Image as PrismaImage, User } from "@prisma/client";
 import { handleError } from "../utils";
 import { redirect } from "next/navigation";
+import { QueryMode,  } from "@prisma/client";
+
 
 const prisma = new PrismaClient();
 
@@ -194,15 +196,17 @@ export async function getAllImages({
   try {
     const skipAmount = (page - 1) * limit;
 
-    const whereClause = searchQuery
-    ? {
-        OR: [
-          { title: { contains: searchQuery, mode: "insensitive" as QueryMode } },
-          { prompt: { contains: searchQuery, mode: "insensitive" as QueryMode } },
-        ],
-      }
-    : {};
+    type QueryMode = "default" | "insensitive";
 
+    const whereClause = searchQuery
+      ? {
+          OR: [
+            { title: { contains: searchQuery, mode: "insensitive" as QueryMode } },
+            { prompt: { contains: searchQuery, mode: "insensitive" as QueryMode } },
+          ],
+        }
+      : {};
+      
     const [images, totalImages, savedImages] = await Promise.all([
       prisma.image.findMany({
         where: whereClause,
