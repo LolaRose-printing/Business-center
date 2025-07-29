@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import {  TransformationTypeKey } from '@/constants';
+import { TransformationTypeKey } from "@/constants";
 
 
 import {
@@ -55,6 +55,8 @@ interface TransformationFormProps {
   type: string
   creditBalance: number
   config: Transformations | null
+  type: TransformationTypeKey;
+
 }
 
 const TransformationForm = ({
