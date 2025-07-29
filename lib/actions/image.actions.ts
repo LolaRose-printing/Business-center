@@ -48,7 +48,7 @@ export async function addImage({
         width: image.width ?? null,
         height: image.height ?? null,
         config: image.config ?? {},
-        transformationUrl: image.transformationUrl ?? null,
+        transformationUrl: image.transformationURL ?? null,
         aspectRatio: image.aspectRatio ?? null,
         color: image.color ?? null,
         prompt: image.prompt ?? null,
