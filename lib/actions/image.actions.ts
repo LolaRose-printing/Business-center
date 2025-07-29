@@ -195,13 +195,13 @@ export async function getAllImages({
     const skipAmount = (page - 1) * limit;
 
     const whereClause = searchQuery
-      ? {
-          OR: [
-            { title: { contains: searchQuery, mode: "insensitive" } },
-            { prompt: { contains: searchQuery, mode: "insensitive" } },
-          ],
-        }
-      : {};
+    ? {
+        OR: [
+          { title: { contains: searchQuery, mode: "insensitive" as QueryMode } },
+          { prompt: { contains: searchQuery, mode: "insensitive" as QueryMode } },
+        ],
+      }
+    : {};
 
     const [images, totalImages, savedImages] = await Promise.all([
       prisma.image.findMany({
