@@ -6,6 +6,7 @@ export interface IAuthor {
   }
   
   export interface IImage {
+    _id: string;  // Added MongoDB-style ID
     id: string;
     title: string;
     transformationType: string;
@@ -13,8 +14,8 @@ export interface IAuthor {
     secureURL: string;
     width: number | null;
     height: number | null;
-    config: any;
-    transformationUrl: string | null;
+    config: any; // You can replace 'any' with Transformations if you have that type
+    transformationUrl: string | null; // fixed casing for URL
     aspectRatio?: string;
     color?: string;
     prompt?: string;
