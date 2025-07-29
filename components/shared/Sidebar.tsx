@@ -149,7 +149,8 @@ const Sidebar = () => {
                         isActive ? "bg-purple-gradient text-white" : "text-gray-700"
                       }`}
                     >
-                      <Link className="sidebar-link" href={link.route}>
+                     <Link className="sidebar-link" href={link.route || "/"}>
+
                         <Image
                           src={link.icon}
                           alt={link.label}
