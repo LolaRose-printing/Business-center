@@ -129,7 +129,7 @@ const TransformationForm = ({
           if (newImage) {
             form.reset()
             setImage(data)
-            router.push(`/transformations/${newImage._id}`)
+            router.push(`/transformations/${newImage.id}`)
           }
         } catch (error) {
           console.log(error)
