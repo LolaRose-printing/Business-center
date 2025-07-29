@@ -141,14 +141,14 @@ const TransformationForm = ({
           const updatedImage = await updateImage({
             image: {
               ...imageData,
-              _id: data._id,
+              id: data.id,
             },
             userId,
             path: `/transformations/${data._id}`,
           })
 
           if (updatedImage) {
-            router.push(`/transformations/${updatedImage._id}`)
+            router.push(`/transformations/${updatedImage.id}`)
           }
         } catch (error) {
           console.log(error)
