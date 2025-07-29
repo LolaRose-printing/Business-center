@@ -8,8 +8,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 
-// Mock function to simulate fetching current user info
-// Replace this with your actual backend auth logic
+// ✅ Mock auth hook — adjust to your real one!
 const useAuth = () => {
   const [user, setUser] = useState<{ name: string; avatarUrl?: string } | null>(null);
 
@@ -146,7 +145,7 @@ const MobileNav = () => {
                         >
                           <Link
                             className="sidebar-link cursor-pointer flex items-center gap-2"
-                            href={link.route}
+                            href={link.route || "/"} // ✅ fallback to "/" to fix TS error
                             onClick={() => {
                               // Optional: Close sheet after nav
                             }}
