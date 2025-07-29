@@ -12,7 +12,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { transformationTypes } from "@/constants";
 import { IImage } from "@/lib/actions/image.actions";
 import { formUrlQuery } from "@/lib/utils";
 
