@@ -48,13 +48,13 @@ export async function checkoutCredits(transaction: CheckoutTransactionParams) {
       buyerId: transaction.buyerId,
     },
     mode: "payment",
-    success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile`,
-    cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/`,
+    success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile?success=true`,
+    cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile?canceled=true`,
   });
 
-  // Redirect will throw internally to trigger a redirect in Next.js
-  redirect(session.url!);
+  return session.url; // ✅ Return the Stripe Checkout URL
 }
+
 
 export async function createTransaction(transaction: CreateTransactionParams) {
   try {
