@@ -22,11 +22,9 @@ type CreateTransactionParams = {
   credits?: number;
   buyerId: string;
 };
+
 export async function checkoutCredits(transaction: CheckoutTransactionParams) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-}
-
 
   const amountInCents = Math.round(transaction.amount * 100);
 
@@ -57,7 +55,6 @@ export async function checkoutCredits(transaction: CheckoutTransactionParams) {
   // Redirect will throw internally to trigger a redirect in Next.js
   redirect(session.url!);
 }
-
 
 export async function createTransaction(transaction: CreateTransactionParams) {
   try {
