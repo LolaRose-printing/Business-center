@@ -4,15 +4,16 @@ import { revalidatePath } from "next/cache";
 import { PrismaClient, Image as PrismaImage, User } from "@prisma/client";
 import { handleError } from "../utils";
 import { redirect } from "next/navigation";
-import { QueryMode,  } from "@prisma/client";
-
 
 const prisma = new PrismaClient();
+
+// Local type alias for QueryMode, since Prisma doesn't export it
+type QueryMode = "default" | "insensitive";
 
 // Use Prisma types only, extended with author info
 export type IImage = PrismaImage & {
   author?: Pick<User, "id" | "firstName" | "lastName" | "email"> | null;
-  transformationUrl?: string | null;  // Note lowercase 'Url'
+  transformationURL?: string | null;  // Note capital "URL"
 };
 
 // ADD IMAGE
@@ -29,7 +30,7 @@ export async function addImage({
     width?: number | null;
     height?: number | null;
     config?: any;
-    transformationUrl?: string | null; // lowercase 'Url'
+    transformationURL?: string | null; // capital URL
     aspectRatio?: string | null;
     color?: string | null;
     prompt?: string | null;
@@ -50,7 +51,7 @@ export async function addImage({
         width: image.width ?? null,
         height: image.height ?? null,
         config: image.config ?? {},
-        transformationUrl: image.transformationUrl ?? null,
+        transformationUrl: image.transformationURL ?? null,
         aspectRatio: image.aspectRatio ?? null,
         color: image.color ?? null,
         prompt: image.prompt ?? null,
@@ -91,7 +92,7 @@ export async function updateImage({
     width?: number | null;
     height?: number | null;
     config?: any;
-    transformationUrl?: string | null; // lowercase 'Url'
+    transformationURL?: string | null; // capital URL
     aspectRatio?: string | null;
     color?: string | null;
     prompt?: string | null;
@@ -118,7 +119,7 @@ export async function updateImage({
         width: image.width ?? null,
         height: image.height ?? null,
         config: image.config ?? {},
-        transformationUrl: image.transformationUrl ?? null,
+        transformationUrl: image.transformationURL ?? null,
         aspectRatio: image.aspectRatio ?? null,
         color: image.color ?? null,
         prompt: image.prompt ?? null,
@@ -196,8 +197,6 @@ export async function getAllImages({
   try {
     const skipAmount = (page - 1) * limit;
 
-    type QueryMode = "default" | "insensitive";
-
     const whereClause = searchQuery
       ? {
           OR: [
@@ -206,7 +205,7 @@ export async function getAllImages({
           ],
         }
       : {};
-      
+
     const [images, totalImages, savedImages] = await Promise.all([
       prisma.image.findMany({
         where: whereClause,
