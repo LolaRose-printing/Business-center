@@ -1,7 +1,9 @@
-export type Transformations =
-  | { restore: boolean }
-  | { removeBackground: boolean }
-  | { fillBackground: boolean }
-  | { remove: { prompt: string; removeShadow: boolean; multiple: boolean } }  // ✅ Add this!
-  | { recolor: { prompt: string; to: string; multiple: boolean } }  // ✅ And maybe this too!
-  | { someOtherOption?: string };
+export interface Transformations {
+    restore?: boolean;
+    removeBackground?: boolean;
+    fillBackground?: boolean;
+    remove?: { prompt: string; removeShadow: boolean; multiple: boolean };
+    recolor?: { prompt: string; to: string; multiple: boolean };
+    someOtherOption?: string;
+  }
+  
