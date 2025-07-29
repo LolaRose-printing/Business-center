@@ -104,11 +104,11 @@ const Card = ({ image }: { image: IImage }) => {
     <li>
       <Link href={`/transformations/${image.id}`} className="collection-card">
         <CldImage
-          src={image.publicId}
+          src={image.publicId as string} // ✅ Ensure type is string
           alt={image.title}
           width={image.width || 500}
           height={image.height || 500}
-          {...image.config}
+          // ✅ Removed `{...image.config}` to avoid invalid props
           loading="lazy"
           className="h-52 w-full rounded-[10px] object-cover"
           sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
