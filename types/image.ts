@@ -6,7 +6,6 @@ export interface IAuthor {
   }
   
   export interface IImage {
-    _id: string;  // Added MongoDB-style ID
     id: string;
     title: string;
     transformationType: string;
