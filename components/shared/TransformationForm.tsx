@@ -52,12 +52,11 @@ interface TransformationFormProps {
   action: string
   data?: any | null
   userId: string
-  type: string
+  type: TransformationTypeKey
   creditBalance: number
   config: Transformations | null
-  type: TransformationTypeKey;
-
 }
+
 
 const TransformationForm = ({
   action,

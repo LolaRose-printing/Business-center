@@ -8,11 +8,12 @@ import Image from "next/image";
 
 type MediaUploaderProps = {
   onValueChange: (value: string) => void;
-  setImage: React.Dispatch<any>;
+  setImage: React.Dispatch<React.SetStateAction<any>>; // more precise than `any`
   publicId: string;
-  image: any;
-  type: string;
+  image: any; // You can define a better type if you have an Image interface
+  type: TransformationTypeKey; // use your predefined transformation keys
 };
+
 
 const MediaUploader = ({
   onValueChange,
